@@ -17,31 +17,90 @@
             padding-top: 40px;
         }
         
-        /* Desktop Icons */
+        /* Desktop - Windows 95 Style */
         .desktop {
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 12px;
             position: fixed;
-            left: 15px;
-            top: 15px;
+            left: 10px;
+            top: 10px;
         }
         .desktop-icon {
             display: flex;
             flex-direction: column;
             align-items: center;
             cursor: pointer;
-            width: 70px;
+            width: 65px;
+            padding: 2px;
         }
-        .desktop-icon-img {
-            font-size: 32px;
+        .desktop-icon:hover { background: #000080; }
+        .desktop-icon:active { opacity: 0.7; }
+        
+        /* Retro Icons using CSS */
+        .icon-img {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
             margin-bottom: 2px;
         }
+        
+        /* My Computer */
+        .icon-mypc {
+            background: linear-gradient(135deg, #c0c0c0 50%, #808080 50%);
+            border: 2px solid;
+            border-color: #dfdfdf #404040 #404040 #dfdfdf;
+            box-shadow: 1px 1px 0 #000;
+        }
+        
+        /* Recycle Bin */
+        .icon-recycle {
+            background: #c0c0c0;
+            border: 2px solid;
+            border-color: #dfdfdf #404040 #404040 #dfdfdf;
+            position: relative;
+        }
+        .icon-recycle::before {
+            content: '';
+            position: absolute;
+            top: 8px;
+            left: 6px;
+            width: 20px;
+            height: 16px;
+            border: 2px solid #404040;
+            border-top: none;
+        }
+        
+        /* My Documents */
+        .icon-docs {
+            background: #ffffcc;
+            border: 2px solid;
+            border-color: #dfdfdf #404040 #404040 #dfdfdf;
+        }
+        
+        /* Network */
+        .icon-net {
+            background: #00a000;
+            border: 2px solid;
+            border-color: #dfdfdf #404040 #404040 #dfdfdf;
+        }
+        
+        /* Control Panel */
+        .icon-cp {
+            background: #c0c0c0;
+            border: 2px solid;
+            border-color: #dfdfdf #404040 #404040 #dfdfdf;
+        }
+        
         .desktop-icon-text {
             color: white;
             font-size: 11px;
             text-align: center;
             text-shadow: 1px 1px 1px black;
+            background: transparent;
         }
         
         /* Window */
@@ -52,7 +111,7 @@
             box-shadow: 2px 2px 10px rgba(0,0,0,0.3);
             max-width: 700px;
             width: 100%;
-            margin-top: 50px;
+            margin-top: 30px;
         }
         
         /* Title Bar */
@@ -143,7 +202,7 @@
         .quote-author { text-align: right; font-weight: bold; color: #000080; }
         .quote-date { text-align: right; font-size: 11px; color: #808080; margin-top: 8px; }
         
-        /* Status Bar - Classic Windows 95 Style */
+        /* Status Bar - Windows 95 Style */
         .status-bar {
             background: #c0c0c0;
             display: flex;
@@ -166,23 +225,23 @@
     <!-- Desktop Icons - Windows 95 Style -->
     <div class="desktop">
         <div class="desktop-icon">
-            <div class="desktop-icon-img">💻</div>
+            <div class="icon-img icon-mypc">PC</div>
             <div class="desktop-icon-text">Mi PC</div>
         </div>
         <div class="desktop-icon">
-            <div class="desktop-icon-img">🗑️</div>
+            <div class="icon-img icon-recycle"></div>
             <div class="desktop-icon-text">Papelera</div>
         </div>
         <div class="desktop-icon">
-            <div class="desktop-icon-img">📁</div>
+            <div class="icon-img icon-docs">D</div>
             <div class="desktop-icon-text">Mis Docs</div>
         </div>
         <div class="desktop-icon">
-            <div class="desktop-icon-img">🌐</div>
-            <div class="desktop-icon-text">Internet</div>
+            <div class="icon-img icon-net">N</div>
+           desktop-icon-text">Red</div>
         </div>
         <div class="desktop-icon">
-            <div class="desktop-icon-img">⚙️</div>
+            <div class="icon-img icon-cp">C</div>
             <div class="desktop-icon-text">Panel Ctrl</div>
         </div>
     </div>
@@ -211,13 +270,13 @@
         
         <!-- Toolbar -->
         <div class="toolbar">
-            <div class="toolbar-btn" title="New">📄</div>
-            <div class="toolbar-btn" title="Open">📂</div>
-            <div class="toolbar-btn" title="Save">💾</div>
+            <div class="toolbar-btn">N</div>
+            <div class="toolbar-btn">A</div>
+            <div class="toolbar-btn">G</div>
             <div class="toolbar-separator"></div>
-            <div class="toolbar-btn" title="Cut">✂️</div>
-            <div class="toolbar-btn" title="Copy">📋</div>
-            <div class="toolbar-btn" title="Paste">📋</div>
+            <div class="toolbar-btn">X</div>
+            <div class="toolbar-btn">C</div>
+            <div class="toolbar-btn">V</div>
             <div class="toolbar-separator"></div>
             <div class="toolbar-btn"><b>B</b></div>
             <div class="toolbar-btn"><i>I</i></div>
