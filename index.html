@@ -17,11 +17,11 @@
             padding-top: 40px;
         }
         
-        /* Desktop - Windows 95 Style */
+        /* Desktop */
         .desktop {
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 18px;
             position: fixed;
             left: 8px;
             top: 8px;
@@ -31,32 +31,33 @@
             flex-direction: column;
             align-items: center;
             cursor: pointer;
-            width: 70px;
+            width: 72px;
             padding: 2px;
         }
         .desktop-icon:hover { background: #000080; }
         .desktop-icon:active { opacity: 0.7; }
         
-        /* Icon container - Windows 95 style */
-        .icon-box {
+        /* Windows 95 Icon Base */
+        .win-icon {
             width: 32px;
             height: 32px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
-            font-family: 'Marlett', 'Tahoma', sans-serif;
-            font-weight: bold;
             margin-bottom: 2px;
+            font-size: 10px;
+            font-weight: bold;
+            position: relative;
         }
         
-        /* My Computer - monitor icon */
+        /* My Computer - Monitor with Windows logo */
         .icon-mypc {
-            background: #c0c0c0;
+            background: linear-gradient(180deg, #c0c0c0 0%, #a0a0a0 100%);
             border: 2px solid;
             border-color: #dfdfdf #404040 #404040 #dfdfdf;
-            color: #000080;
-            font-size: 14px;
+            box-shadow: inset -1px -1px 0 #404040, inset 1px 1px 0 #dfdfdf;
+            font-size: 8px;
+            color: #0000FF;
         }
         
         /* Recycle Bin */
@@ -64,35 +65,60 @@
             background: #c0c0c0;
             border: 2px solid;
             border-color: #dfdfdf #404040 #404040 #dfdfdf;
-            color: #808080;
-            font-size: 16px;
+            position: relative;
+        }
+        .icon-bin::before {
+            content: '';
+            position: absolute;
+            bottom: 4px;
+            left: 4px;
+            right: 4px;
+            height: 18px;
+            background: #808080;
+            border: 1px solid #404040;
         }
         
-        /* My Documents - folder */
+        /* My Documents - Yellow Folder */
         .icon-docs {
+            background: linear-gradient(180deg, #ffff00 0%, #c0c000 100%);
+            border: 1px solid #808000;
+            position: relative;
+        }
+        .icon-docs::before {
+            content: '';
+            position: absolute;
+            top: 8px;
+            left: 2px;
+            width: 28px;
+            height: 22px;
             background: #ffff00;
-            border: 2px solid;
-            border-color: #ffff00 #808000 #808000 #ffff00;
-            color: #ffff00;
-            font-size: 12px;
+            border: 1px solid #808000;
         }
         
-        /* Network */
+        /* Network - Globe */
         .icon-net {
-            background: #00a000;
+            background: linear-gradient(180deg, #00a000 0%, #006000 100%);
             border: 2px solid;
             border-color: #00ff00 #004000 #004000 #00ff00;
-            color: #ffff00;
-            font-size: 14px;
+            color: #ffffff;
+            font-size: 7px;
         }
         
-        /* Control Panel */
+        /* Control Panel - Gears */
         .icon-cp {
             background: #c0c0c0;
             border: 2px solid;
             border-color: #dfdfdf #404040 #404040 #dfdfdf;
-            color: #404040;
-            font-size: 16px;
+        }
+        
+        /* Internet Explorer */
+        .icon-ie {
+            background: linear-gradient(180deg, #000080 0%, #000040 100%);
+            border: 2px solid;
+            border-color: #0080ff #000040 #000040 #0080ff;
+            color: #ffff00;
+            font-size: 6px;
+            font-family: Arial, sans-serif;
         }
         
         .desktop-icon-text {
@@ -100,6 +126,7 @@
             font-size: 11px;
             text-align: center;
             text-shadow: 1px 1px 1px black;
+            background: transparent;
         }
         
         /* Window */
@@ -180,7 +207,6 @@
             min-height: 380px;
         }
         
-        /* Paper */
         .paper {
             padding: 20px 25px;
             font-family: 'Courier New', monospace;
@@ -216,38 +242,36 @@
             white-space: nowrap;
         }
         
-        /* Footer */
         .footer { text-align: center; margin-top: 15px; font-size: 10px; color: #808080; }
     </style>
 </head>
 <body>
-    <!-- Desktop Icons - Windows 95 Style -->
+    <!-- Desktop Icons -->
     <div class="desktop">
         <div class="desktop-icon">
-            <div class="icon-box icon-mypc">🖥</div>
+            <div class="win-icon icon-mypc">WIN</div>
             <div class="desktop-icon-text">Mi PC</div>
         </div>
         <div class="desktop-icon">
-            <div class="icon-box icon-bin">🗑</div>
+            <div class="win-icon icon-bin"></div>
             <div class="desktop-icon-text">Papelera</div>
         </div>
         <div class="desktop-icon">
-            <div class="icon-box icon-docs">📁</div>
+            <div class="win-icon icon-docs"></div>
             <div class="desktop-icon-text">Mis Docs</div>
         </div>
         <div class="desktop-icon">
-            <div class="icon-box icon-net">🌐</div>
-            <div class="desktop-icon-text">Red</div>
+            <div class="win-icon icon-net">WWW</div>
+            <div class="desktop-icon-text">Internet</div>
         </div>
         <div class="desktop-icon">
-            <div class="icon-box icon-cp">⚙</div>
+            <div class="win-icon icon-cp">•••</div>
             <div class="desktop-icon-text">Panel Ctrl</div>
         </div>
     </div>
     
     <!-- WordPad Window -->
     <div class="window">
-        <!-- Title Bar -->
         <div class="title-bar">
             <div class="title-bar-text">citas.txt - WordPad</div>
             <div class="title-bar-controls">
@@ -257,7 +281,6 @@
             </div>
         </div>
         
-        <!-- Menu Bar -->
         <div class="menu-bar">
             <span class="menu-item">Archivo</span>
             <span class="menu-item">Editar</span>
@@ -267,7 +290,6 @@
             <span class="menu-item">Ayuda</span>
         </div>
         
-        <!-- Toolbar -->
         <div class="toolbar">
             <div class="toolbar-btn">N</div>
             <div class="toolbar-btn">A</div>
@@ -281,7 +303,6 @@
             <div class="toolbar-btn"><i>I</i></div>
         </div>
         
-        <!-- Editor -->
         <div class="editor-container">
             <div class="paper">
                 <div class="quote-text" id="quote">Cargando cita del día...</div>
@@ -289,7 +310,6 @@
                 <div class="quote-date" id="date"></div>
             </div>
             
-            <!-- Status Bar -->
             <div class="status-bar">
                 <div class="status-section" id="status">Listo</div>
                 <div class="status-section">Ln 1, Col 1</div>
