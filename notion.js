@@ -3,11 +3,34 @@
 // NOTION_API_KEY: Tu API key de Notion
 // NOTION_PAGE_ID: ID de la página de Notion donde guardar las citas
 
-const NOTION_API_KEY = "TU_NOTION_API_KEY";  // Reemplazar en Vercel
-const NOTION_PAGE_ID = "TU_NOTION_PAGE_ID";  // Reemplazar en Vercel
+const NOTION_API_KEY = "TU_NOTION_API_KEY";
+const NOTION_PAGE_ID = "TU_NOTION_PAGE_ID";
 
-// Array de citas famous (como fallback)
-const fallbackQuotes = [
+// Detect language
+const userLang = navigator.language || navigator.userLanguage;
+const isSpanish = userLang.startsWith('es');
+
+const translations = {
+    es: {
+        loading: 'Cargando cita del día...',
+        quoteOf: 'Cita del',
+        saving: 'Guardando...',
+        saved: 'Guardado ✓',
+        ready: 'Listo'
+    },
+    en: {
+        loading: 'Loading quote of the day...',
+        quoteOf: 'Quote of',
+        saving: 'Saving...',
+        saved: 'Saved ✓',
+        ready: 'Ready'
+    }
+};
+
+const t = translations[isSpanish ? 'es' : 'en'];
+
+// Citas famous
+const fallbackQuotes = isSpanish ? [
     { text: "El conocimiento es poder.", author: "Francis Bacon" },
     { text: "Yo soy aquello que soy", author: "Popeye" },
     { text: "Que la fuerza te acompañe", author: "Yoda" },
@@ -30,28 +53,56 @@ const fallbackQuotes = [
     { text: "Buena navegación", author: "Capitán Manthan" },
     { text: "Houston, tenemos un problema", author: "Apollo 13" },
     { text: "Bond. James Bond", author: "James Bond" },
-    { text: "Era viernes", author: "El Mundo" }
+    { text: "Era viernes", author: "El Mundo" },
+    { text: "Que la suerte te acompañe", author: "Various" }
+] : [
+    { text: "Knowledge is power.", author: "Francis Bacon" },
+    { text: "I am what I am", author: "Popeye" },
+    { text: "May the Force be with you", author: "Yoda" },
+    { text: "Elementary, my dear Watson", author: "Sherlock Holmes" },
+    { text: "There's something wrong with this neighborhood", author: "Batman" },
+    { text: "With great power comes great responsibility", author: "Uncle Ben" },
+    { text: "May the odds be ever in your favor", author: "Han Solo" },
+    { text: "Everyone suspects someone", author: "Agatha Christie" },
+    { text: "Don't think, feel", author: "Bruce Lee" },
+    { text: "I am your father", author: "Darth Vader" },
+    { text: "After all, tomorrow is another day", author: "Scarlett O'Hara" },
+    { text: "The Force is strong in my family", author: "Luke Skywalker" },
+    { text: "I'll be back", author: "Terminator" },
+    { text: "E.T. phone home", author: "E.T." },
+    { text: "I'm the king of the world", author: "Jack Dawson" },
+    { text: "Life is like a box of chocolates", author: "Forrest Gump" },
+    { text: "I know nothing", author: "Socrates" },
+    { text: "I think, therefore I am", author: "Descartes" },
+    { text: "It was inevitable", author: "Thanos" },
+    { text: "Houston, we have a problem", author: "Apollo 13" },
+    { text: "Bond. James Bond", author: "James Bond" },
+    { text: "It's Friday", author: "Friday" },
+    { text: "May luck be with you", author: "Various" }
 ];
 
-// Obtener la fecha actual
+// Get current date
 const today = new Date();
-const dateStr = today.toLocaleDateString('es-ES', { 
+
+// Format date based on language
+const dateStr = today.toLocaleDateString(isSpanish ? 'es-ES' : 'en-US', { 
     weekday: 'long', 
     year: 'numeric', 
     month: 'long', 
     day: 'numeric' 
 });
 
+// Set current date in status bar
 document.getElementById('currentDate').textContent = dateStr;
 
-// Función para obtener una cita basada en la fecha
+// Function to get daily quote based on date
 function getDailyQuote() {
     const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / 1000 / 60 / 60 / 24);
     const index = dayOfYear % fallbackQuotes.length;
     return fallbackQuotes[index];
 }
 
-// Guardar en Notion (se llama automáticamente)
+// Save to Notion
 async function saveToNotion(quote, dateStr) {
     if (NOTION_API_KEY === "TU_NOTION_API_KEY" || !NOTION_API_KEY) {
         console.log('⚠️ API key de Notion no configurada');
@@ -72,7 +123,7 @@ async function saveToNotion(quote, dateStr) {
                     title: [
                         {
                             text: {
-                                content: `Cita: "${quote.text}" - ${quote.author}`
+                                content: `Quote: "${quote.text}" - ${quote.author}`
                             }
                         }
                     ]
@@ -85,7 +136,7 @@ async function saveToNotion(quote, dateStr) {
                             rich_text: [
                                 {
                                     text: {
-                                        content: `Fecha: ${dateStr}`
+                                        content: `Date: ${dateStr}`
                                     }
                                 }
                             ]
@@ -108,34 +159,37 @@ async function saveToNotion(quote, dateStr) {
     }
 }
 
-// Verificar si ya se guardó hoy (usando localStorage)
+// Check if already saved today (using localStorage)
 function hasSavedToday() {
     const lastSaved = localStorage.getItem('quoteSavedDate');
     const todayStr = today.toISOString().split('T')[0];
     return lastSaved === todayStr;
 }
 
-// Marcar como guardado hoy
+// Mark as saved
 function markAsSaved() {
     const todayStr = today.toISOString().split('T')[0];
     localStorage.setItem('quoteSavedDate', todayStr);
 }
 
-// Mostrar la cita
+// Display the quote
 const quote = getDailyQuote();
 
-// Simular carga
+// Set loading text
+document.getElementById('quote').textContent = t.loading;
+
+// Load quote after a short delay
 setTimeout(async () => {
     document.getElementById('quote').textContent = `"${quote.text}"`;
     document.getElementById('author').textContent = `— ${quote.author}`;
-    document.getElementById('date').textContent = `Cita del ${dateStr}`;
-    document.getElementById('status').textContent = 'Listo';
+    document.getElementById('date').textContent = `${t.quoteOf} ${dateStr}`;
+    document.getElementById('status').textContent = t.ready;
     
-    // Auto-guardar en Notion si no se ha guardado hoy
+    // Auto-save to Notion if not saved today
     if (!hasSavedToday()) {
-        document.getElementById('status').textContent = 'Guardando...';
+        document.getElementById('status').textContent = t.saving;
         await saveToNotion(quote, dateStr);
         markAsSaved();
-        document.getElementById('status').textContent = 'Listo ✓';
+        document.getElementById('status').textContent = t.saved;
     }
 }, 500);
