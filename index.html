@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Citas del Día - WordPad</title>
+    <style>
+        /* Windows 95/98 WordPad Aesthetic */
+        @font-face {
+            font-family: 'MS Sans Serif';
+            src: local('Tahoma'), local('Verdana'), local('sans-serif');
+        }
+        
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #008080;
+            font-family: 'Tahoma', 'Verdana', sans-serif;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding-top: 40px;
+        }
+        
+        /* Window Container */
+        .window {
+            background: #c0c0c0;
+            border: 2px solid;
+            border-color: #ffffff #808080 #808080 #ffffff;
+            box-shadow: 2px 2px 10px rgba(0,0,0,0.3);
+            max-width: 700px;
+            width: 100%;
+        }
+        
+        /* Title Bar */
+        .title-bar {
+            background: linear-gradient(90deg, #000080, #1084d0);
+            padding: 3px 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .title-bar-text {
+            color: white;
+            font-size: 13px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .title-bar-controls {
+            display: flex;
+            gap: 2px;
+        }
+        
+        .title-bar-btn {
+            width: 16px;
+            height: 14px;
+            background: #c0c0c0;
+            border: 1px solid;
+            border-color: #ffffff #808080 #808080 #ffffff;
+            font-size: 10px;
+            line-height: 11px;
+            text-align: center;
+            cursor: pointer;
+            color: black;
+        }
+        
+        .title-bar-btn:active {
+            border-color: #808080 #ffffff #ffffff #808080;
+        }
+        
+        /* Menu Bar */
+        .menu-bar {
+            background: #c0c0c0;
+            padding: 2px 4px;
+            font-size: 12px;
+            display: flex;
+            gap: 12px;
+            border-bottom: 1px solid #808080;
+        }
+        
+        .menu-item {
+            cursor: pointer;
+        }
+        
+        .menu-item:hover {
+            background: #000080;
+            color: white;
+        }
+        
+        /* Toolbar */
+        .toolbar {
+            background: #c0c0c0;
+            padding: 4px;
+            display: flex;
+            gap: 4px;
+            border-bottom: 1px solid #808080;
+            flex-wrap: wrap;
+        }
+        
+        .toolbar-btn {
+            width: 24px;
+            height: 22px;
+            background: #c0c0c0;
+            border: 1px solid;
+            border-color: #ffffff #808080 #808080 #ffffff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+        
+        .toolbar-btn:active {
+            border-color: #808080 #ffffff #ffffff #808080;
+        }
+        
+        .toolbar-separator {
+            width: 2px;
+            background: #808080;
+            border-right: 1px solid #ffffff;
+        }
+        
+        /* Editor Area */
+        .editor-container {
+            background: #ffffff;
+            border: 2px solid;
+            border-color: #808080 #ffffff #ffffff #808080;
+            margin: 4px;
+            min-height: 400px;
+        }
+        
+        .status-bar {
+            background: #c0c0c0;
+            padding: 2px 4px;
+            font-size: 11px;
+            display: flex;
+            justify-content: space-between;
+            border-top: 1px solid #808080;
+        }
+        
+        /* Content Area */
+        .content {
+            padding: 20px;
+            font-family: 'Tahoma', 'Verdana', sans-serif;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #000000;
+            min-height: 350px;
+        }
+        
+        .quote-text {
+            font-style: italic;
+            font-size: 16px;
+            margin-bottom: 20px;
+            padding: 10px;
+            background: #ffffd0;
+            border-left: 3px solid #000080;
+        }
+        
+        .quote-author {
+            text-align: right;
+            font-weight: bold;
+            color: #000080;
+        }
+        
+        .quote-date {
+            text-align: right;
+            font-size: 12px;
+            color: #808080;
+            margin-top: 10px;
+        }
+        
+        /* Vintage Cursor */
+        .cursor {
+            display: inline-block;
+            width: 8px;
+            height: 15px;
+            background: black;
+            animation: blink 1s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+        
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 16px;
+            height: 16px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #c0c0c0;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #c0c0c0;
+            border: 2px solid;
+            border-color: #ffffff #808080 #808080 #ffffff;
+        }
+        
+        ::-webkit-scrollbar-button {
+            background: #c0c0c0;
+            border: 2px solid;
+            border-color: #ffffff #808080 #808080 #ffffff;
+        }
+        
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 10px;
+            color: #808080;
+        }
+    </style>
+</head>
+<body>
+    <div class="window">
+        <div class="title-bar">
+            <div class="title-bar-text">
+                📝 citas.txt - WordPad
+            </div>
+            <div class="title-bar-controls">
+                <div class="title-bar-btn">_</div>
+                <div class="title-bar-btn">□</div>
+                <div class="title-bar-btn">×</div>
+            </div>
+        </div>
+        
+        <div class="menu-bar">
+            <span class="menu-item">Archivo</span>
+            <span class="menu-item">Editar</span>
+            <span class="menu-item">Ver</span>
+            <span class="menu-item">Insertar</span>
+            <span class="menu-item">Formato</span>
+            <span class="menu-item">Ayuda</span>
+        </div>
+        
+        <div class="toolbar">
+            <div class="toolbar-btn">📋</div>
+            <div class="toolbar-btn">✂️</div>
+            <div class="toolbar-btn">📋</div>
+            <div class="toolbar-separator"></div>
+            <div class="toolbar-btn">�️</div>
+            <div class="toolbar-btn">🔤</div>
+            <div class="toolbar-separator"></div>
+            <div class="toolbar-btn">🔗</div>
+            <div class="toolbar-btn">📷</div>
+            <div class="toolbar-separator"></div>
+            <div class="toolbar-btn">◀️</div>
+            <div class="toolbar-btn">▶️</div>
+        </div>
+        
+        <div class="editor-container">
+            <div class="content" id="content">
+                <div class="quote-text" id="quote">Cargando cita del día...</div>
+                <div class="quote-author" id="author"></div>
+                <div class="quote-date" id="date"></div>
+                <span class="cursor"></span>
+            </div>
+        </div>
+        
+        <div class="status-bar">
+            <span id="status">Listo</span>
+            <span>Fecha: <span id="currentDate"></span></span>
+        </div>
+    </div>
+    
+    <div class="footer">
+        Windows 98 WordPad Style | Citas del Día
+    </div>
+
+    <script>
+        // Array de citas famous (como fallback)
+        const fallbackQuotes = [
+            { text: "El conocimiento es poder.", author: "Francis Bacon" },
+            { text: "Soy aquello que soy", author: "Popeye" },
+            { text: "Que la fuerza te acompañe", author: "Yoda" },
+            { text: "¡Elemental, querido Watson!", author: "Sherlock Holmes" },
+            { text: "Hay algo en este barrio que no me gusta", author: "Batman" },
+            { text: "Con gran poder viene gran responsabilidad", author: "Tío Ben" },
+            { text: "Que el odds estén siempre a tu favor", author: "Han Solo" },
+            { text: "May the Force be with you", author: "Varios" },
+            { text: "Todo el mundo sospecha de alguien", author: "Agatha Christie" },
+            { text: "No pienses, siente", author: "Bruce Lee" },
+            { text: "Yo soy tu padre", author: "Darth Vader" },
+            { text: "Después de todo, mañana es otro día", author: "Scarlett O'Hara" },
+            { text: "La fuerza es fuerte en mi familia", author: "Luke Skywalker" },
+            { text: "Volveré", author: "Terminator" },
+            { text: "E.T. teléfono casa", author: "E.T." }
+        ];
+        
+        // Obtener la fecha actual
+        const today = new Date();
+        const dateStr = today.toLocaleDateString('es-ES', { 
+            weekday: 'long', 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+        });
+        
+        document.getElementById('currentDate').textContent = dateStr;
+        
+        // Función para obtener una cita basada en la fecha
+        function getDailyQuote() {
+            // Usar la fecha como seed para obtener siempre la misma cita del día
+            const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / 1000 / 60 / 60 / 24);
+            const index = dayOfYear % fallbackQuotes.length;
+            return fallbackQuotes[index];
+        }
+        
+        // Mostrar la cita
+        const quote = getDailyQuote();
+        
+        // Simular carga
+        setTimeout(() => {
+            document.getElementById('quote').textContent = `"${quote.text}"`;
+            document.getElementById('author').textContent = `— ${quote.author}`;
+            document.getElementById('date').textContent = `Cita del ${dateStr}`;
+            document.getElementById('status').textContent = 'Listo';
+        }, 500);
+        
+        // Guardar en Notion (solo si hay API key configurada)
+        async function saveToNotion() {
+            try {
+                // Por ahora solo loggeamos
+                console.log('Cita guardada:', quote);
+                console.log('Fecha:', dateStr);
+            } catch (e) {
+                console.log('Error al guardar en Notion:', e);
+            }
+        }
+    </script>
+</body>
+</html>
