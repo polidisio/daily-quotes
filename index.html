@@ -16,6 +16,35 @@
             justify-content: center;
             padding-top: 40px;
         }
+        
+        /* Desktop Icons */
+        .desktop {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            position: fixed;
+            left: 15px;
+            top: 15px;
+        }
+        .desktop-icon {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            width: 70px;
+        }
+        .desktop-icon-img {
+            font-size: 32px;
+            margin-bottom: 2px;
+        }
+        .desktop-icon-text {
+            color: white;
+            font-size: 11px;
+            text-align: center;
+            text-shadow: 1px 1px 1px black;
+        }
+        
+        /* Window */
         .window {
             background: #c0c0c0;
             border: 2px solid;
@@ -23,9 +52,10 @@
             box-shadow: 2px 2px 10px rgba(0,0,0,0.3);
             max-width: 700px;
             width: 100%;
+            margin-top: 50px;
         }
         
-        /* Title Bar with icons */
+        /* Title Bar */
         .title-bar {
             background: linear-gradient(90deg, #000080, #1084d0);
             padding: 2px 3px;
@@ -34,25 +64,11 @@
             align-items: center;
             height: 22px;
         }
-        .title-bar-icons {
-            display: flex;
-            gap: 3px;
-            margin-right: 5px;
-        }
-        .title-bar-icon {
-            font-size: 14px;
-            cursor: pointer;
-        }
         .title-bar-text { 
             color: white; 
             font-size: 12px; 
             font-weight: bold;
-            flex: 1;
-            display: flex;
-            align-items: center;
-            gap: 5px;
         }
-        .title-bar-text span { font-size: 11px; }
         .title-bar-controls { display: flex; gap: 2px; }
         .title-bar-btn {
             width: 14px; height: 12px;
@@ -97,37 +113,23 @@
         .toolbar-btn:active { border-color: #808080 #ffffff #ffffff #808080; }
         .toolbar-separator { width: 2px; background: #808080; border-right: 1px solid #ffffff; margin: 0 2px; }
         
-        /* Ruler */
-        .ruler {
-            background: #c0c0c0;
-            padding: 2px 8px;
-            font-size: 10px;
-            color: #808080;
-            border-bottom: 1px solid #808080;
-            display: flex;
-            gap: 20px;
-        }
-        
         /* Editor Area */
         .editor-container {
             background: #ffffff;
             border: 2px solid;
             border-color: #808080 #ffffff #ffffff #808080;
-            margin: 4px;
+            margin: 3px;
             min-height: 380px;
-            display: flex;
-            flex-direction: column;
         }
         
-        /* Paper area */
+        /* Paper */
         .paper {
-            flex: 1;
             padding: 20px 25px;
             font-family: 'Courier New', monospace;
             font-size: 14px;
             line-height: 1.5;
             color: #000000;
-            min-height: 300px;
+            min-height: 350px;
         }
         
         .quote-text {
@@ -141,25 +143,19 @@
         .quote-author { text-align: right; font-weight: bold; color: #000080; }
         .quote-date { text-align: right; font-size: 11px; color: #808080; margin-top: 8px; }
         
-        /* Status Bar - Classic Windows style */
+        /* Status Bar - Classic Windows 95 Style */
         .status-bar {
             background: #c0c0c0;
-            border-top: 1px solid #808080;
             display: flex;
             font-size: 11px;
-            padding: 0;
+            border-top: 1px solid #808080;
         }
         .status-section {
-            padding: 2px 8px;
-            border-right: 1px solid #808080;
-            border-bottom: 1px solid #ffffff;
-            border-top: 1px solid #808080;
-            border-left: 1px solid #ffffff;
-            margin: 2px 2px 2px 0;
-        }
-        .status-section:last-child {
-            border-right: 1px solid #ffffff;
-            flex: 1;
+            padding: 2px 6px;
+            border: 1px solid;
+            border-color: #808080 #ffffff #ffffff #808080;
+            margin: 2px;
+            white-space: nowrap;
         }
         
         /* Footer */
@@ -167,19 +163,35 @@
     </style>
 </head>
 <body>
+    <!-- Desktop Icons - Windows 95 Style -->
+    <div class="desktop">
+        <div class="desktop-icon">
+            <div class="desktop-icon-img">💻</div>
+            <div class="desktop-icon-text">Mi PC</div>
+        </div>
+        <div class="desktop-icon">
+            <div class="desktop-icon-img">🗑️</div>
+            <div class="desktop-icon-text">Papelera</div>
+        </div>
+        <div class="desktop-icon">
+            <div class="desktop-icon-img">📁</div>
+            <div class="desktop-icon-text">Mis Docs</div>
+        </div>
+        <div class="desktop-icon">
+            <div class="desktop-icon-img">🌐</div>
+            <div class="desktop-icon-text">Internet</div>
+        </div>
+        <div class="desktop-icon">
+            <div class="desktop-icon-img">⚙️</div>
+            <div class="desktop-icon-text">Panel Ctrl</div>
+        </div>
+    </div>
+    
+    <!-- WordPad Window -->
     <div class="window">
-        <!-- Title Bar with icons -->
+        <!-- Title Bar -->
         <div class="title-bar">
-            <div class="title-bar-text">
-                <span>📝</span>
-                <span>citas.txt - WordPad</span>
-            </div>
-            <div class="title-bar-icons">
-                <span class="title-bar-icon" title="My Computer">💻</span>
-                <span class="title-bar-icon" title="Recycle Bin">🗑️</span>
-                <span class="title-bar-icon" title="Control Panel">⚙️</span>
-                <span class="title-bar-icon" title="Network">🌐</span>
-            </div>
+            <div class="title-bar-text">citas.txt - WordPad</div>
             <div class="title-bar-controls">
                 <div class="title-bar-btn">_</div>
                 <div class="title-bar-btn">□</div>
@@ -207,18 +219,8 @@
             <div class="toolbar-btn" title="Copy">📋</div>
             <div class="toolbar-btn" title="Paste">📋</div>
             <div class="toolbar-separator"></div>
-            <div class="toolbar-btn" title="Bold"><b>B</b></div>
-            <div class="toolbar-btn" title="Italic"><i>I</i></div>
-            <div class="toolbar-btn" title="Underline"><u>U</u></div>
-            <div class="toolbar-separator"></div>
-            <div class="toolbar-btn" title="Center">� center</div>
-            <div class="toolbar-btn" title="Left">� left</div>
-            <div class="toolbar-btn" title="Right">� right</div>
-        </div>
-        
-        <!-- Ruler -->
-        <div class="ruler">
-            1&nbsp;&nbsp;&nbsp;5&nbsp;&nbsp;&nbsp;10&nbsp;&nbsp;&nbsp;15&nbsp;&nbsp;&nbsp;20&nbsp;&nbsp;&nbsp;25&nbsp;&nbsp;&nbsp;30
+            <div class="toolbar-btn"><b>B</b></div>
+            <div class="toolbar-btn"><i>I</i></div>
         </div>
         
         <!-- Editor -->
@@ -229,20 +231,18 @@
                 <div class="quote-date" id="date"></div>
             </div>
             
-            <!-- Status Bar - Classic Windows Style -->
+            <!-- Status Bar -->
             <div class="status-bar">
                 <div class="status-section" id="status">Listo</div>
                 <div class="status-section">Ln 1, Col 1</div>
                 <div class="status-section">100%</div>
                 <div class="status-section">CP1252</div>
-                <div class="status-section">
-                    Fecha: <span id="currentDate"></span>
-                </div>
+                <div class="status-section">Fecha: <span id="currentDate"></span></div>
             </div>
         </div>
     </div>
     
-    <div class="footer">Windows 98 | WordPad</div>
+    <div class="footer">Windows 98</div>
     <script src="notion.js"></script>
 </body>
 </html>
