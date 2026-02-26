@@ -37,88 +37,10 @@
         .desktop-icon:hover { background: #000080; }
         .desktop-icon:active { opacity: 0.7; }
         
-        /* Windows 95 Icon Base */
-        .win-icon {
-            width: 32px;
-            height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .desktop-icon-img {
+            width: 48px;
+            height: 48px;
             margin-bottom: 2px;
-            font-size: 10px;
-            font-weight: bold;
-            position: relative;
-        }
-        
-        /* My Computer - Monitor with Windows logo */
-        .icon-mypc {
-            background: linear-gradient(180deg, #c0c0c0 0%, #a0a0a0 100%);
-            border: 2px solid;
-            border-color: #dfdfdf #404040 #404040 #dfdfdf;
-            box-shadow: inset -1px -1px 0 #404040, inset 1px 1px 0 #dfdfdf;
-            font-size: 8px;
-            color: #0000FF;
-        }
-        
-        /* Recycle Bin */
-        .icon-bin {
-            background: #c0c0c0;
-            border: 2px solid;
-            border-color: #dfdfdf #404040 #404040 #dfdfdf;
-            position: relative;
-        }
-        .icon-bin::before {
-            content: '';
-            position: absolute;
-            bottom: 4px;
-            left: 4px;
-            right: 4px;
-            height: 18px;
-            background: #808080;
-            border: 1px solid #404040;
-        }
-        
-        /* My Documents - Yellow Folder */
-        .icon-docs {
-            background: linear-gradient(180deg, #ffff00 0%, #c0c000 100%);
-            border: 1px solid #808000;
-            position: relative;
-        }
-        .icon-docs::before {
-            content: '';
-            position: absolute;
-            top: 8px;
-            left: 2px;
-            width: 28px;
-            height: 22px;
-            background: #ffff00;
-            border: 1px solid #808000;
-        }
-        
-        /* Network - Globe */
-        .icon-net {
-            background: linear-gradient(180deg, #00a000 0%, #006000 100%);
-            border: 2px solid;
-            border-color: #00ff00 #004000 #004000 #00ff00;
-            color: #ffffff;
-            font-size: 7px;
-        }
-        
-        /* Control Panel - Gears */
-        .icon-cp {
-            background: #c0c0c0;
-            border: 2px solid;
-            border-color: #dfdfdf #404040 #404040 #dfdfdf;
-        }
-        
-        /* Internet Explorer */
-        .icon-ie {
-            background: linear-gradient(180deg, #000080 0%, #000040 100%);
-            border: 2px solid;
-            border-color: #0080ff #000040 #000040 #0080ff;
-            color: #ffff00;
-            font-size: 6px;
-            font-family: Arial, sans-serif;
         }
         
         .desktop-icon-text {
@@ -126,7 +48,6 @@
             font-size: 11px;
             text-align: center;
             text-shadow: 1px 1px 1px black;
-            background: transparent;
         }
         
         /* Window */
@@ -249,24 +170,20 @@
     <!-- Desktop Icons -->
     <div class="desktop">
         <div class="desktop-icon">
-            <div class="win-icon icon-mypc">WIN</div>
+            <img src="icons/my-computer.png" alt="Mi PC" class="desktop-icon-img">
             <div class="desktop-icon-text">Mi PC</div>
         </div>
         <div class="desktop-icon">
-            <div class="win-icon icon-bin"></div>
+            <img src="icons/recycle-bin.png" alt="Papelera" class="desktop-icon-img">
             <div class="desktop-icon-text">Papelera</div>
         </div>
         <div class="desktop-icon">
-            <div class="win-icon icon-docs"></div>
+            <img src="icons/my-documents.png" alt="Mis Docs" class="desktop-icon-img">
             <div class="desktop-icon-text">Mis Docs</div>
         </div>
         <div class="desktop-icon">
-            <div class="win-icon icon-net">WWW</div>
+            <img src="icons/internet.png" alt="Internet" class="desktop-icon-img">
             <div class="desktop-icon-text">Internet</div>
-        </div>
-        <div class="desktop-icon">
-            <div class="win-icon icon-cp">•••</div>
-            <div class="desktop-icon-text">Panel Ctrl</div>
         </div>
     </div>
     
