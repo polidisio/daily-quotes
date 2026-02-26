@@ -4,62 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daily Quotes - WordPad</title>
-    <script>
-        // Detect language and set translations
-        const userLang = navigator.language || navigator.userLanguage;
-        const isSpanish = userLang.startsWith('es');
-        
-        const translations = {
-            es: {
-                title: 'citas.txt - WordPad',
-                menu: ['Archivo', 'Editar', 'Ver', 'Insertar', 'Formato', 'Ayuda'],
-                status: {
-                    ready: 'Listo',
-                    lineCol: 'Ln 1, Col 1',
-                    percent: '100%',
-                    encoding: 'CP1252'
-                },
-                loading: 'Cargando cita del día...',
-                quoteOf: 'Cita del'
-            },
-            en: {
-                title: 'quotes.txt - WordPad',
-                menu: ['File', 'Edit', 'View', 'Insert', 'Format', 'Help'],
-                status: {
-                    ready: 'Ready',
-                    lineCol: 'Ln 1, Col 1',
-                    percent: '100%',
-                    encoding: 'CP1252'
-                },
-                loading: 'Loading quote of the day...',
-                quoteOf: 'Quote of'
-            }
-        };
-        
-        const t = isSpanish ? translations.es : translations.en;
-        
-        // Apply translations when DOM is ready
-        document.addEventListener('DOMContentLoaded', function() {
-            // Title bar
-            document.querySelector('.title-bar-text').textContent = t.title;
-            
-            // Menu items
-            const menuItems = document.querySelectorAll('.menu-item');
-            menuItems.forEach((item, i) => {
-                if (t.menu[i]) item.textContent = t.menu[i];
-            });
-            
-            // Status bar
-            const statusSections = document.querySelectorAll('.status-section');
-            if (statusSections[0]) statusSections[0].textContent = t.status.ready;
-            if (statusSections[1]) statusSections[1].textContent = t.status.lineCol;
-            if (statusSections[2]) statusSections[2].textContent = t.status.percent;
-            if (statusSections[3]) statusSections[3].textContent = t.status.encoding;
-            
-            // Loading text
-            document.getElementById('quote').textContent = t.loading;
-        });
-    </script>
     <style>
         * { box-sizing: border-box; }
         body {
@@ -227,13 +171,13 @@
     <!-- Desktop Icons (LEFT, no labels) -->
     <div class="desktop">
         <div class="desktop-icon">
-            <img src="icons/my-computer.png" alt="Mi PC" class="desktop-icon-img">
+            <img src="icons/my-computer.png" alt="My Computer" class="desktop-icon-img">
         </div>
         <div class="desktop-icon">
-            <img src="icons/recycle-bin.png" alt="Papelera" class="desktop-icon-img">
+            <img src="icons/recycle-bin.png" alt="Recycle Bin" class="desktop-icon-img">
         </div>
         <div class="desktop-icon">
-            <img src="icons/my-documents.png" alt="Mis Docs" class="desktop-icon-img">
+            <img src="icons/my-documents.png" alt="My Documents" class="desktop-icon-img">
         </div>
         <div class="desktop-icon">
             <img src="icons/internet.png" alt="Internet" class="desktop-icon-img">
@@ -275,17 +219,17 @@
         
         <div class="editor-container">
             <div class="paper">
-                <div class="quote-text" id="quote">Cargando cita del día...</div>
+                <div class="quote-text" id="quote">Loading...</div>
                 <div class="quote-author" id="author"></div>
                 <div class="quote-date" id="date"></div>
             </div>
             
             <div class="status-bar">
-                <div class="status-section" id="status">Listo</div>
+                <div class="status-section" id="status">...</div>
                 <div class="status-section">Ln 1, Col 1</div>
                 <div class="status-section">100%</div>
                 <div class="status-section">CP1252</div>
-                <div class="status-section">Fecha: <span id="currentDate"></span></div>
+                <div class="status-section">Date: <span id="currentDate"></span></div>
             </div>
         </div>
     </div>
