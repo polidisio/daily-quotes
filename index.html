@@ -24,96 +24,170 @@
             max-width: 700px;
             width: 100%;
         }
+        
+        /* Title Bar with icons */
         .title-bar {
             background: linear-gradient(90deg, #000080, #1084d0);
-            padding: 3px 4px;
+            padding: 2px 3px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            height: 22px;
         }
-        .title-bar-text { color: white; font-size: 13px; font-weight: bold; }
+        .title-bar-icons {
+            display: flex;
+            gap: 3px;
+            margin-right: 5px;
+        }
+        .title-bar-icon {
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .title-bar-text { 
+            color: white; 
+            font-size: 12px; 
+            font-weight: bold;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .title-bar-text span { font-size: 11px; }
         .title-bar-controls { display: flex; gap: 2px; }
         .title-bar-btn {
-            width: 16px; height: 14px;
+            width: 14px; height: 12px;
             background: #c0c0c0;
             border: 1px solid;
             border-color: #ffffff #808080 #808080 #ffffff;
-            font-size: 10px; line-height: 11px;
+            font-size: 9px; line-height: 10px;
             text-align: center; cursor: pointer;
+            font-weight: bold;
         }
+        .title-bar-btn:active { border-color: #808080 #ffffff #ffffff #808080; }
+        
+        /* Menu Bar */
         .menu-bar {
             background: #c0c0c0;
             padding: 2px 4px;
-            font-size: 12px;
-            display: flex; gap: 12px;
+            font-size: 11px;
+            display: flex; gap: 10px;
             border-bottom: 1px solid #808080;
         }
-        .menu-item { cursor: pointer; }
+        .menu-item { cursor: pointer; padding: 1px 3px; }
         .menu-item:hover { background: #000080; color: white; }
+        
+        /* Toolbar */
         .toolbar {
             background: #c0c0c0;
-            padding: 4px;
-            display: flex; gap: 4px;
+            padding: 3px 4px;
+            display: flex; gap: 3px;
             border-bottom: 1px solid #808080;
             flex-wrap: wrap;
         }
         .toolbar-btn {
-            width: 24px; height: 22px;
+            width: 20px; height: 18px;
             background: #c0c0c0;
             border: 1px solid;
             border-color: #ffffff #808080 #808080 #ffffff;
             cursor: pointer;
             display: flex; align-items: center;
-            justify-content: center; font-size: 14px;
+            justify-content: center; font-size: 11px;
+            font-weight: bold;
         }
-        .toolbar-separator { width: 2px; background: #808080; border-right: 1px solid #ffffff; }
+        .toolbar-btn:active { border-color: #808080 #ffffff #ffffff #808080; }
+        .toolbar-separator { width: 2px; background: #808080; border-right: 1px solid #ffffff; margin: 0 2px; }
+        
+        /* Ruler */
+        .ruler {
+            background: #c0c0c0;
+            padding: 2px 8px;
+            font-size: 10px;
+            color: #808080;
+            border-bottom: 1px solid #808080;
+            display: flex;
+            gap: 20px;
+        }
+        
+        /* Editor Area */
         .editor-container {
             background: #ffffff;
             border: 2px solid;
             border-color: #808080 #ffffff #ffffff #808080;
             margin: 4px;
-            min-height: 400px;
+            min-height: 380px;
+            display: flex;
+            flex-direction: column;
         }
-        .status-bar {
-            background: #c0c0c0;
-            padding: 2px 4px;
-            font-size: 11px;
-            display: flex; justify-content: space-between;
-            border-top: 1px solid #808080;
-        }
-        .content {
-            padding: 20px;
-            font-family: 'Tahoma', 'Verdana', sans-serif;
+        
+        /* Paper area */
+        .paper {
+            flex: 1;
+            padding: 20px 25px;
+            font-family: 'Courier New', monospace;
             font-size: 14px;
-            line-height: 1.6;
+            line-height: 1.5;
             color: #000000;
-            min-height: 350px;
+            min-height: 300px;
         }
+        
         .quote-text {
             font-style: italic;
-            font-size: 16px;
-            margin-bottom: 20px;
-            padding: 10px;
+            font-size: 15px;
+            margin-bottom: 15px;
+            padding: 8px;
             background: #ffffd0;
-            border-left: 3px solid #000080;
+            border: 1px solid #808080;
         }
         .quote-author { text-align: right; font-weight: bold; color: #000080; }
-        .quote-date { text-align: right; font-size: 12px; color: #808080; margin-top: 10px; }
-        .cursor { display: inline-block; width: 8px; height: 15px; background: black; animation: blink 1s infinite; }
-        @keyframes blink { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0; } }
-        .footer { text-align: center; margin-top: 20px; font-size: 10px; color: #808080; }
+        .quote-date { text-align: right; font-size: 11px; color: #808080; margin-top: 8px; }
+        
+        /* Status Bar - Classic Windows style */
+        .status-bar {
+            background: #c0c0c0;
+            border-top: 1px solid #808080;
+            display: flex;
+            font-size: 11px;
+            padding: 0;
+        }
+        .status-section {
+            padding: 2px 8px;
+            border-right: 1px solid #808080;
+            border-bottom: 1px solid #ffffff;
+            border-top: 1px solid #808080;
+            border-left: 1px solid #ffffff;
+            margin: 2px 2px 2px 0;
+        }
+        .status-section:last-child {
+            border-right: 1px solid #ffffff;
+            flex: 1;
+        }
+        
+        /* Footer */
+        .footer { text-align: center; margin-top: 15px; font-size: 10px; color: #808080; }
     </style>
 </head>
 <body>
     <div class="window">
+        <!-- Title Bar with icons -->
         <div class="title-bar">
-            <div class="title-bar-text">📝 citas.txt - WordPad</div>
+            <div class="title-bar-text">
+                <span>📝</span>
+                <span>citas.txt - WordPad</span>
+            </div>
+            <div class="title-bar-icons">
+                <span class="title-bar-icon" title="My Computer">💻</span>
+                <span class="title-bar-icon" title="Recycle Bin">🗑️</span>
+                <span class="title-bar-icon" title="Control Panel">⚙️</span>
+                <span class="title-bar-icon" title="Network">🌐</span>
+            </div>
             <div class="title-bar-controls">
                 <div class="title-bar-btn">_</div>
                 <div class="title-bar-btn">□</div>
                 <div class="title-bar-btn">×</div>
             </div>
         </div>
+        
+        <!-- Menu Bar -->
         <div class="menu-bar">
             <span class="menu-item">Archivo</span>
             <span class="menu-item">Editar</span>
@@ -122,33 +196,53 @@
             <span class="menu-item">Formato</span>
             <span class="menu-item">Ayuda</span>
         </div>
+        
+        <!-- Toolbar -->
         <div class="toolbar">
-            <div class="toolbar-btn">📋</div>
-            <div class="toolbar-btn">✂️</div>
-            <div class="toolbar-btn">📋</div>
+            <div class="toolbar-btn" title="New">📄</div>
+            <div class="toolbar-btn" title="Open">📂</div>
+            <div class="toolbar-btn" title="Save">💾</div>
             <div class="toolbar-separator"></div>
-            <div class="toolbar-btn">B</div>
-            <div class="toolbar-btn">I</div>
+            <div class="toolbar-btn" title="Cut">✂️</div>
+            <div class="toolbar-btn" title="Copy">📋</div>
+            <div class="toolbar-btn" title="Paste">📋</div>
             <div class="toolbar-separator"></div>
-            <div class="toolbar-btn">🔗</div>
-            <div class="toolbar-btn">📷</div>
+            <div class="toolbar-btn" title="Bold"><b>B</b></div>
+            <div class="toolbar-btn" title="Italic"><i>I</i></div>
+            <div class="toolbar-btn" title="Underline"><u>U</u></div>
             <div class="toolbar-separator"></div>
-            <div class="toolbar-btn">◀️</div>
-            <div class="toolbar-btn">▶️</div>
+            <div class="toolbar-btn" title="Center">� center</div>
+            <div class="toolbar-btn" title="Left">� left</div>
+            <div class="toolbar-btn" title="Right">� right</div>
         </div>
+        
+        <!-- Ruler -->
+        <div class="ruler">
+            1&nbsp;&nbsp;&nbsp;5&nbsp;&nbsp;&nbsp;10&nbsp;&nbsp;&nbsp;15&nbsp;&nbsp;&nbsp;20&nbsp;&nbsp;&nbsp;25&nbsp;&nbsp;&nbsp;30
+        </div>
+        
+        <!-- Editor -->
         <div class="editor-container">
-            <div class="content">
+            <div class="paper">
                 <div class="quote-text" id="quote">Cargando cita del día...</div>
                 <div class="quote-author" id="author"></div>
                 <div class="quote-date" id="date"></div>
             </div>
-        </div>
-        <div class="status-bar">
-            <span id="status">Listo</span>
-            <span>Fecha: <span id="currentDate"></span></span>
+            
+            <!-- Status Bar - Classic Windows Style -->
+            <div class="status-bar">
+                <div class="status-section" id="status">Listo</div>
+                <div class="status-section">Ln 1, Col 1</div>
+                <div class="status-section">100%</div>
+                <div class="status-section">CP1252</div>
+                <div class="status-section">
+                    Fecha: <span id="currentDate"></span>
+                </div>
+            </div>
         </div>
     </div>
-    <div class="footer">Windows 98 WordPad Style | Citas del Día</div>
+    
+    <div class="footer">Windows 98 | WordPad</div>
     <script src="notion.js"></script>
 </body>
 </html>
