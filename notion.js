@@ -109,6 +109,64 @@ async function saveToNotion(quote, dateStr) {
         return false;
     }
     
+    // Get both Spanish and English quotes
+    const today = new Date();
+    const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / 1000 / 60 / 60 / 24);
+    const esQuotes = [
+        { text: "El conocimiento es poder.", author: "Francis Bacon" },
+        { text: "Yo soy aquello que soy", author: "Popeye" },
+        { text: "Que la fuerza te acompañe", author: "Yoda" },
+        { text: "¡Elemental, querido Watson!", author: "Sherlock Holmes" },
+        { text: "Hay algo en este barrio que no me gusta", author: "Batman" },
+        { text: "Con gran poder viene gran responsabilidad", author: "Tío Ben" },
+        { text: "Que el odds estén siempre a tu favor", author: "Han Solo" },
+        { text: "Todo el mundo sospecha de alguien", author: "Agatha Christie" },
+        { text: "No pienses, siente", author: "Bruce Lee" },
+        { text: "Yo soy tu padre", author: "Darth Vader" },
+        { text: "Después de todo, mañana es otro día", author: "Scarlett O'Hara" },
+        { text: "La fuerza es fuerte en mi familia", author: "Luke Skywalker" },
+        { text: "Volveré", author: "Terminator" },
+        { text: "E.T. teléfono casa", author: "E.T." },
+        { text: "Soy el rey del mundo", author: "Jack Dawson" },
+        { text: "La vida es como una caja de bombones", author: "Forrest Gump" },
+        { text: "Yo solo se que no se nada", author: "Sócrates" },
+        { text: "Pienso luego existo", author: "Descartes" },
+        { text: "Era inevitable", author: "Thanos" },
+        { text: "Buena navegación", author: "Capitán Manthan" },
+        { text: "Houston, tenemos un problema", author: "Apollo 13" },
+        { text: "Bond. James Bond", author: "James Bond" },
+        { text: "Era viernes", author: "El Mundo" },
+        { text: "Que la suerte te acompañe", author: "Various" }
+    ];
+    const enQuotes = [
+        { text: "Knowledge is power.", author: "Francis Bacon" },
+        { text: "I am what I am", author: "Popeye" },
+        { text: "May the Force be with you", author: "Yoda" },
+        { text: "Elementary, my dear Watson", author: "Sherlock Holmes" },
+        { text: "There's something wrong with this neighborhood", author: "Batman" },
+        { text: "With great power comes great responsibility", author: "Uncle Ben" },
+        { text: "May the odds be ever in your favor", author: "Han Solo" },
+        { text: "Everyone suspects someone", author: "Agatha Christie" },
+        { text: "Don't think, feel", author: "Bruce Lee" },
+        { text: "I am your father", author: "Darth Vader" },
+        { text: "After all, tomorrow is another day", author: "Scarlett O'Hara" },
+        { text: "The Force is strong in my family", author: "Luke Skywalker" },
+        { text: "I'll be back", author: "Terminator" },
+        { text: "E.T. phone home", author: "E.T." },
+        { text: "I'm the king of the world", author: "Jack Dawson" },
+        { text: "Life is like a box of chocolates", author: "Forrest Gump" },
+        { text: "I know nothing", author: "Socrates" },
+        { text: "I think, therefore I am", author: "Descartes" },
+        { text: "It was inevitable", author: "Thanos" },
+        { text: "Houston, we have a problem", author: "Apollo 13" },
+        { text: "Bond. James Bond", author: "James Bond" },
+        { text: "It's Friday", author: "Friday" },
+        { text: "May luck be with you", author: "Various" }
+    ];
+    
+    const esQuote = esQuotes[dayOfYear % esQuotes.length];
+    const enQuote = enQuotes[dayOfYear % enQuotes.length];
+    
     try {
         const response = await fetch('https://api.notion.com/v1/pages', {
             method: 'POST',
@@ -123,7 +181,7 @@ async function saveToNotion(quote, dateStr) {
                     title: [
                         {
                             text: {
-                                content: `Quote: "${quote.text}" - ${quote.author}`
+                                content: `${esQuote.text} — ${esQuote.author} / ${enQuote.text} — ${enQuote.author}`
                             }
                         }
                     ]
@@ -136,7 +194,33 @@ async function saveToNotion(quote, dateStr) {
                             rich_text: [
                                 {
                                     text: {
-                                        content: `Date: ${dateStr}`
+                                        content: `📅 Date: ${dateStr}`
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        object: 'block',
+                        type: 'paragraph',
+                        paragraph: {
+                            rich_text: [
+                                {
+                                    text: {
+                                        content: `🇪🇸 ES: "${esQuote.text}" — ${esQuote.author}`
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        object: 'block',
+                        type: 'paragraph',
+                        paragraph: {
+                            rich_text: [
+                                {
+                                    text: {
+                                        content: `🇬🇧 EN: "${enQuote.text}" — ${enQuote.author}`
                                     }
                                 }
                             ]
