@@ -18,15 +18,14 @@
             padding-top: 40px;
         }
         
-        /* Desktop */
+        /* Desktop - Icons on LEFT */
         .desktop {
             display: flex;
-            flex-direction: row;
-            gap: 20px;
+            flex-direction: column;
+            gap: 18px;
             position: fixed;
-            right: 15px;
-            top: 10px;
-            align-items: flex-start;
+            left: 8px;
+            top: 8px;
         }
         .desktop-icon {
             display: flex;
@@ -53,6 +52,7 @@
             box-shadow: 2px 2px 10px rgba(0,0,0,0.3);
             max-width: 700px;
             width: 100%;
+            margin-top: 20px;
         }
         
         /* Title Bar */
@@ -113,20 +113,23 @@
         .toolbar-btn:active { border-color: #808080 #ffffff #ffffff #808080; }
         .toolbar-separator { width: 2px; background: #808080; border-right: 1px solid #ffffff; margin: 0 2px; }
         
-        /* Editor - Compact */
+        /* Editor Area */
         .editor-container {
             background: #ffffff;
             border: 2px solid;
             border-color: #808080 #ffffff #ffffff #808080;
             margin: 3px;
+            min-height: 380px;
         }
         
+        /* Paper */
         .paper {
-            padding: 15px 20px;
+            padding: 20px 25px;
             font-family: 'Courier New', monospace;
             font-size: 14px;
             line-height: 1.5;
             color: #000000;
+            min-height: 350px;
         }
         
         .quote-text {
@@ -157,7 +160,7 @@
     </style>
 </head>
 <body>
-    <!-- Desktop Icons (right side, no labels) -->
+    <!-- Desktop Icons (LEFT, no labels) -->
     <div class="desktop">
         <div class="desktop-icon">
             <img src="icons/my-computer.png" alt="Mi PC" class="desktop-icon-img">
