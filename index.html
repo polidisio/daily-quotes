@@ -21,11 +21,12 @@
         /* Desktop */
         .desktop {
             display: flex;
-            flex-direction: column;
-            gap: 18px;
+            flex-direction: row;
+            gap: 20px;
             position: fixed;
-            left: 8px;
-            top: 8px;
+            right: 15px;
+            top: 10px;
+            align-items: flex-start;
         }
         .desktop-icon {
             display: flex;
@@ -44,13 +45,6 @@
             margin-bottom: 2px;
         }
         
-        .desktop-icon-text {
-            color: white;
-            font-size: 11px;
-            text-align: center;
-            text-shadow: 1px 1px 1px black;
-        }
-        
         /* Window */
         .window {
             background: #c0c0c0;
@@ -59,7 +53,6 @@
             box-shadow: 2px 2px 10px rgba(0,0,0,0.3);
             max-width: 700px;
             width: 100%;
-            margin-top: 20px;
         }
         
         /* Title Bar */
@@ -120,22 +113,20 @@
         .toolbar-btn:active { border-color: #808080 #ffffff #ffffff #808080; }
         .toolbar-separator { width: 2px; background: #808080; border-right: 1px solid #ffffff; margin: 0 2px; }
         
-        /* Editor Area */
+        /* Editor - Compact */
         .editor-container {
             background: #ffffff;
             border: 2px solid;
             border-color: #808080 #ffffff #ffffff #808080;
             margin: 3px;
-            min-height: 380px;
         }
         
         .paper {
-            padding: 20px 25px;
+            padding: 15px 20px;
             font-family: 'Courier New', monospace;
             font-size: 14px;
             line-height: 1.5;
             color: #000000;
-            min-height: 350px;
         }
         
         .quote-text {
@@ -163,28 +154,22 @@
             margin: 2px;
             white-space: nowrap;
         }
-        
-        .footer { text-align: center; margin-top: 15px; font-size: 10px; color: #808080; }
     </style>
 </head>
 <body>
-    <!-- Desktop Icons -->
+    <!-- Desktop Icons (right side, no labels) -->
     <div class="desktop">
         <div class="desktop-icon">
             <img src="icons/my-computer.png" alt="Mi PC" class="desktop-icon-img">
-            <div class="desktop-icon-text">Mi PC</div>
         </div>
         <div class="desktop-icon">
             <img src="icons/recycle-bin.png" alt="Papelera" class="desktop-icon-img">
-            <div class="desktop-icon-text">Papelera</div>
         </div>
         <div class="desktop-icon">
             <img src="icons/my-documents.png" alt="Mis Docs" class="desktop-icon-img">
-            <div class="desktop-icon-text">Mis Docs</div>
         </div>
         <div class="desktop-icon">
             <img src="icons/internet.png" alt="Internet" class="desktop-icon-img">
-            <div class="desktop-icon-text">Internet</div>
         </div>
     </div>
     
@@ -238,7 +223,6 @@
         </div>
     </div>
     
-    <div class="footer">Windows 98</div>
     <script src="notion.js"></script>
 </body>
 </html>
