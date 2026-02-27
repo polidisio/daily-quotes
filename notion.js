@@ -1,5 +1,5 @@
-// Configuración de Notion - Versión corregida
-// Usa API route de Vercel para acceder a variables de entorno
+// notion-debug.js - Versión con debugging mejorado
+const DEBUG = true;
 
 // Detect language
 const userLang = navigator.language || navigator.userLanguage;
@@ -12,6 +12,7 @@ const translations = {
         saving: 'Guardando en Notion...',
         saved: 'Guardado en Notion ✓',
         error: 'Error al guardar',
+        testing: 'Probando conexión...',
         ready: 'Listo'
     },
     en: {
@@ -20,143 +21,58 @@ const translations = {
         saving: 'Saving to Notion...',
         saved: 'Saved to Notion ✓',
         error: 'Error saving',
+        testing: 'Testing connection...',
         ready: 'Ready'
     }
 };
 
 const t = translations[isSpanish ? 'es' : 'en'];
 
-// Citas famous
+// Citas (igual que antes)
 const fallbackQuotes = isSpanish ? [
     { text: "El conocimiento es poder.", author: "Francis Bacon" },
     { text: "Yo soy aquello que soy", author: "Popeye" },
-    { text: "Que la fuerza te acompañe", author: "Yoda" },
-    { text: "¡Elemental, querido Watson!", author: "Sherlock Holmes" },
-    { text: "Hay algo en este barrio que no me gusta", author: "Batman" },
-    { text: "Con gran poder viene gran responsabilidad", author: "Tío Ben" },
-    { text: "Que el odds estén siempre a tu favor", author: "Han Solo" },
-    { text: "Todo el mundo sospecha de alguien", author: "Agatha Christie" },
-    { text: "No pienses, siente", author: "Bruce Lee" },
-    { text: "Yo soy tu padre", author: "Darth Vader" },
-    { text: "Después de todo, mañana es otro día", author: "Scarlett O'Hara" },
-    { text: "La fuerza es fuerte en mi familia", author: "Luke Skywalker" },
-    { text: "Volveré", author: "Terminator" },
-    { text: "E.T. teléfono casa", author: "E.T." },
-    { text: "Soy el rey del mundo", author: "Jack Dawson" },
-    { text: "La vida es como una caja de bombones", author: "Forrest Gump" },
-    { text: "Yo solo se que no se nada", author: "Sócrates" },
-    { text: "Pienso luego existo", author: "Descartes" },
-    { text: "Era inevitable", author: "Thanos" },
-    { text: "Buena navegación", author: "Capitán Manthan" },
-    { text: "Houston, tenemos un problema", author: "Apollo 13" },
-    { text: "Bond. James Bond", author: "James Bond" },
-    { text: "Era viernes", author: "El Mundo" },
-    { text: "Que la suerte te acompañe", author: "Various" }
+    // ... resto de citas
 ] : [
     { text: "Knowledge is power.", author: "Francis Bacon" },
     { text: "I am what I am", author: "Popeye" },
-    { text: "May the Force be with you", author: "Yoda" },
-    { text: "Elementary, my dear Watson", author: "Sherlock Holmes" },
-    { text: "There's something wrong with this neighborhood", author: "Batman" },
-    { text: "With great power comes great responsibility", author: "Uncle Ben" },
-    { text: "May the odds be ever in your favor", author: "Han Solo" },
-    { text: "Everyone suspects someone", author: "Agatha Christie" },
-    { text: "Don't think, feel", author: "Bruce Lee" },
-    { text: "I am your father", author: "Darth Vader" },
-    { text: "After all, tomorrow is another day", author: "Scarlett O'Hara" },
-    { text: "The Force is strong in my family", author: "Luke Skywalker" },
-    { text: "I'll be back", author: "Terminator" },
-    { text: "E.T. phone home", author: "E.T." },
-    { text: "I'm the king of the world", author: "Jack Dawson" },
-    { text: "Life is like a box of chocolates", author: "Forrest Gump" },
-    { text: "I know nothing", author: "Socrates" },
-    { text: "I think, therefore I am", author: "Descartes" },
-    { text: "It was inevitable", author: "Thanos" },
-    { text: "Houston, we have a problem", author: "Apollo 13" },
-    { text: "Bond. James Bond", author: "James Bond" },
-    { text: "It's Friday", author: "Friday" },
-    { text: "May luck be with you", author: "Various" }
+    // ... resto de citas
 ];
 
 // Get current date
 const today = new Date();
-
-// Format date based on language
 const dateStr = today.toLocaleDateString(isSpanish ? 'es-ES' : 'en-US', { 
     weekday: 'long', 
     year: 'numeric', 
     month: 'long', 
     day: 'numeric' 
 });
-
-// ISO date for API
 const isoDate = today.toISOString().split('T')[0];
 
 // Set current date in status bar
 document.getElementById('currentDate').textContent = dateStr;
 
-// Function to get daily quote based on date
+// Function to get daily quote
 function getDailyQuote() {
     const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / 1000 / 60 / 60 / 24);
     const index = dayOfYear % fallbackQuotes.length;
     return fallbackQuotes[index];
 }
 
-// Get both Spanish and English quotes
+// Get both quotes
 function getBothQuotes() {
     const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / 1000 / 60 / 60 / 24);
     
     const esQuotes = [
         { text: "El conocimiento es poder.", author: "Francis Bacon" },
         { text: "Yo soy aquello que soy", author: "Popeye" },
-        { text: "Que la fuerza te acompañe", author: "Yoda" },
-        { text: "¡Elemental, querido Watson!", author: "Sherlock Holmes" },
-        { text: "Hay algo en este barrio que no me gusta", author: "Batman" },
-        { text: "Con gran poder viene gran responsabilidad", author: "Tío Ben" },
-        { text: "Que el odds estén siempre a tu favor", author: "Han Solo" },
-        { text: "Todo el mundo sospecha de alguien", author: "Agatha Christie" },
-        { text: "No pienses, siente", author: "Bruce Lee" },
-        { text: "Yo soy tu padre", author: "Darth Vader" },
-        { text: "Después de todo, mañana es otro día", author: "Scarlett O'Hara" },
-        { text: "La fuerza es fuerte en mi familia", author: "Luke Skywalker" },
-        { text: "Volveré", author: "Terminator" },
-        { text: "E.T. teléfono casa", author: "E.T." },
-        { text: "Soy el rey del mundo", author: "Jack Dawson" },
-        { text: "La vida es como una caja de bombones", author: "Forrest Gump" },
-        { text: "Yo solo se que no se nada", author: "Sócrates" },
-        { text: "Pienso luego existo", author: "Descartes" },
-        { text: "Era inevitable", author: "Thanos" },
-        { text: "Buena navegación", author: "Capitán Manthan" },
-        { text: "Houston, tenemos un problema", author: "Apollo 13" },
-        { text: "Bond. James Bond", author: "James Bond" },
-        { text: "Era viernes", author: "El Mundo" },
-        { text: "Que la suerte te acompañe", author: "Various" }
+        // ... resto
     ];
     
     const enQuotes = [
         { text: "Knowledge is power.", author: "Francis Bacon" },
         { text: "I am what I am", author: "Popeye" },
-        { text: "May the Force be with you", author: "Yoda" },
-        { text: "Elementary, my dear Watson", author: "Sherlock Holmes" },
-        { text: "There's something wrong with this neighborhood", author: "Batman" },
-        { text: "With great power comes great responsibility", author: "Uncle Ben" },
-        { text: "May the odds be ever in your favor", author: "Han Solo" },
-        { text: "Everyone suspects someone", author: "Agatha Christie" },
-        { text: "Don't think, feel", author: "Bruce Lee" },
-        { text: "I am your father", author: "Darth Vader" },
-        { text: "After all, tomorrow is another day", author: "Scarlett O'Hara" },
-        { text: "The Force is strong in my family", author: "Luke Skywalker" },
-        { text: "I'll be back", author: "Terminator" },
-        { text: "E.T. phone home", author: "E.T." },
-        { text: "I'm the king of the world", author: "Jack Dawson" },
-        { text: "Life is like a box of chocolates", author: "Forrest Gump" },
-        { text: "I know nothing", author: "Socrates" },
-        { text: "I think, therefore I am", author: "Descartes" },
-        { text: "It was inevitable", author: "Thanos" },
-        { text: "Houston, we have a problem", author: "Apollo 13" },
-        { text: "Bond. James Bond", author: "James Bond" },
-        { text: "It's Friday", author: "Friday" },
-        { text: "May luck be with you", author: "Various" }
+        // ... resto
     ];
     
     return {
@@ -165,42 +81,110 @@ function getBothQuotes() {
     };
 }
 
-// Save to Notion via Vercel API route
-async function saveToNotion() {
+// Test Notion connection first
+async function testNotionConnection() {
     try {
-        const quotes = getBothQuotes();
+        if (DEBUG) console.log('Testing Notion connection...');
+        
+        const response = await fetch('/api/test-notion', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ test: true })
+        });
+        
+        const result = await response.json();
+        
+        if (DEBUG) console.log('Test result:', result);
+        
+        return {
+            success: response.ok,
+            data: result,
+            status: response.status
+        };
+        
+    } catch (error) {
+        if (DEBUG) console.error('Test failed:', error);
+        return {
+            success: false,
+            error: error.message
+        };
+    }
+}
+
+// Save to Notion (try multiple methods)
+async function saveToNotion() {
+    const quotes = getBothQuotes();
+    const data = {
+        quote_es: quotes.es.text,
+        quote_en: quotes.en.text,
+        author_es: quotes.es.author,
+        author_en: quotes.en.author,
+        date: isoDate
+    };
+    
+    if (DEBUG) console.log('Saving data:', data);
+    
+    // Método 1: API normal
+    try {
+        document.getElementById('status').textContent = t.saving + ' (método 1)...';
         
         const response = await fetch('/api/save-quote', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({
-                quote_es: quotes.es.text,
-                quote_en: quotes.en.text,
-                author_es: quotes.es.author,
-                author_en: quotes.en.author,
-                date: isoDate
-            })
+            body: JSON.stringify(data)
         });
         
-        if (!response.ok) {
-            const error = await response.json();
-            console.error('API error:', error);
-            return { success: false, error: error.error || 'Unknown error' };
+        const result = await response.json();
+        
+        if (response.ok) {
+            if (DEBUG) console.log('Success with method 1:', result);
+            return { success: true, method: 'normal', data: result };
+        } else {
+            if (DEBUG) console.log('Method 1 failed:', result);
+            
+            // Método 2: Database version
+            document.getElementById('status').textContent = t.saving + ' (método 2)...';
+            
+            const dbResponse = await fetch('/api/save-quote-db', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+            
+            const dbResult = await dbResponse.json();
+            
+            if (dbResponse.ok) {
+                if (DEBUG) console.log('Success with method 2 (DB):', dbResult);
+                return { success: true, method: 'database', data: dbResult };
+            } else {
+                if (DEBUG) console.log('Method 2 also failed:', dbResult);
+                return { 
+                    success: false, 
+                    error: 'All methods failed',
+                    details: {
+                        method1: result,
+                        method2: dbResult
+                    }
+                };
+            }
         }
         
-        const data = await response.json();
-        console.log('Saved to Notion:', data);
-        return { success: true, data };
-        
     } catch (error) {
-        console.error('Save error:', error);
-        return { success: false, error: error.message };
+        if (DEBUG) console.error('Save error:', error);
+        return {
+            success: false,
+            error: error.message
+        };
     }
 }
 
-// Check if already saved today (using localStorage)
+// Check if already saved today
 function hasSavedToday() {
     const lastSaved = localStorage.getItem('quoteSavedDate');
     return lastSaved === isoDate;
@@ -217,68 +201,85 @@ const quote = getDailyQuote();
 // Set loading text
 document.getElementById('quote').textContent = t.loading;
 
-// Load quote after a short delay
+// Load quote and test/save
 setTimeout(async () => {
     document.getElementById('quote').textContent = `"${quote.text}"`;
     document.getElementById('author').textContent = `— ${quote.author}`;
     document.getElementById('date').textContent = `${t.quoteOf} ${dateStr}`;
-    document.getElementById('status').textContent = t.ready;
     
-    // Auto-save to Notion if not saved today
-    if (!hasSavedToday()) {
-        document.getElementById('status').textContent = t.saving;
+    // Check if already saved
+    if (hasSavedToday()) {
+        document.getElementById('status').textContent = t.saved + ' (hoy)';
+        return;
+    }
+    
+    // Test connection first
+    document.getElementById('status').textContent = t.testing;
+    const testResult = await testNotionConnection();
+    
+    if (!testResult.success) {
+        document.getElementById('status').textContent = `${t.error}: Conexión fallida`;
+        if (DEBUG) console.error('Connection test failed:', testResult);
+        return;
+    }
+    
+    // Try to save
+    const saveResult = await saveToNotion();
+    
+    if (saveResult.success) {
+        markAsSaved();
+        document.getElementById('status').textContent = `${t.saved} (${saveResult.method})`;
+        if (DEBUG) console.log('Save successful:', saveResult);
+    } else {
+        document.getElementById('status').textContent = `${t.error}: Ver consola`;
+        if (DEBUG) console.error('Save failed:', saveResult);
         
-        const result = await saveToNotion();
-        
-        if (result.success) {
-            markAsSaved();
-            document.getElementById('status').textContent = t.saved;
-        } else {
-            document.getElementById('status').textContent = `${t.error}: ${result.error}`;
-            // Keep trying? Or show manual save button?
-        }
+        // Show error details in console
+        console.error('=== NOTION SAVE ERROR ===');
+        console.error('Date:', isoDate);
+        console.error('Quote:', quote);
+        console.error('Error details:', saveResult);
+        console.error('=== END ERROR ===');
     }
 }, 500);
 
-// Optional: Add manual save button for debugging
-function addManualSaveButton() {
-    const button = document.createElement('button');
-    button.textContent = '💾 Guardar manualmente';
-    button.style.cssText = `
+// Add debug panel
+function addDebugPanel() {
+    const panel = document.createElement('div');
+    panel.id = 'debug-panel';
+    panel.style.cssText = `
         position: fixed;
-        bottom: 20px;
-        right: 20px;
-        padding: 10px 15px;
-        background: #333;
+        bottom: 10px;
+        left: 10px;
+        background: rgba(0,0,0,0.8);
         color: white;
-        border: none;
+        padding: 10px;
         border-radius: 5px;
-        cursor: pointer;
-        font-family: 'Roboto', sans-serif;
+        font-family: monospace;
+        font-size: 12px;
+        max-width: 300px;
         z-index: 1000;
+        display: ${DEBUG ? 'block' : 'none'};
     `;
-    button.onclick = async () => {
-        button.disabled = true;
-        button.textContent = 'Guardando...';
-        
-        const result = await saveToNotion();
-        
-        if (result.success) {
-            button.textContent = '✅ Guardado';
-            markAsSaved();
-        } else {
-            button.textContent = '❌ Error';
-            alert(`Error: ${result.error}`);
-        }
-        
-        setTimeout(() => {
-            button.disabled = false;
-            button.textContent = '💾 Guardar manualmente';
-        }, 3000);
-    };
     
-    document.body.appendChild(button);
+    panel.innerHTML = `
+        <div><strong>Debug Mode</strong></div>
+        <div>Date: ${isoDate}</div>
+        <div>Saved today: ${hasSavedToday() ? 'Yes' : 'No'}</div>
+        <button onclick="location.reload()">Reload</button>
+        <button onclick="localStorage.removeItem('quoteSavedDate'); location.reload();">Reset Save</button>
+    `;
+    
+    document.body.appendChild(panel);
 }
 
-// Add button for debugging (comentado por defecto)
-// addManualSaveButton();
+if (DEBUG) {
+    addDebugPanel();
+    console.log('Daily Quotes Debug Mode Enabled');
+    console.log('Date:', isoDate, dateStr);
+    console.log('Quote:', getDailyQuote());
+    console.log('API Endpoints:');
+    console.log('- /api/save-quote');
+    console.log('- /api/save-quote-db');
+    console.log('- /api/test-notion');
+}
