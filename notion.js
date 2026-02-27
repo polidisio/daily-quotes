@@ -1,10 +1,5 @@
-// Configuración de Notion
-// IMPORTANTE: Configurar estas variables en Vercel Dashboard > Settings > Environment Variables
-// NOTION_API_KEY: Tu API key de Notion
-// NOTION_PAGE_ID: ID de la página de Notion donde guardar las citas
-
-const NOTION_API_KEY = "TU_NOTION_API_KEY";
-const NOTION_PAGE_ID = "TU_NOTION_PAGE_ID";
+// Configuración de Notion - Versión corregida
+// Usa API route de Vercel para acceder a variables de entorno
 
 // Detect language
 const userLang = navigator.language || navigator.userLanguage;
@@ -14,15 +9,17 @@ const translations = {
     es: {
         loading: 'Cargando cita del día...',
         quoteOf: 'Cita del',
-        saving: 'Guardando...',
-        saved: 'Guardado ✓',
+        saving: 'Guardando en Notion...',
+        saved: 'Guardado en Notion ✓',
+        error: 'Error al guardar',
         ready: 'Listo'
     },
     en: {
         loading: 'Loading quote of the day...',
         quoteOf: 'Quote of',
-        saving: 'Saving...',
-        saved: 'Saved ✓',
+        saving: 'Saving to Notion...',
+        saved: 'Saved to Notion ✓',
+        error: 'Error saving',
         ready: 'Ready'
     }
 };
@@ -92,6 +89,9 @@ const dateStr = today.toLocaleDateString(isSpanish ? 'es-ES' : 'en-US', {
     day: 'numeric' 
 });
 
+// ISO date for API
+const isoDate = today.toISOString().split('T')[0];
+
 // Set current date in status bar
 document.getElementById('currentDate').textContent = dateStr;
 
@@ -102,16 +102,10 @@ function getDailyQuote() {
     return fallbackQuotes[index];
 }
 
-// Save to Notion
-async function saveToNotion(quote, dateStr) {
-    if (NOTION_API_KEY === "TU_NOTION_API_KEY" || !NOTION_API_KEY) {
-        console.log('⚠️ API key de Notion no configurada');
-        return false;
-    }
-    
-    // Get both Spanish and English quotes
-    const today = new Date();
+// Get both Spanish and English quotes
+function getBothQuotes() {
     const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / 1000 / 60 / 60 / 24);
+    
     const esQuotes = [
         { text: "El conocimiento es poder.", author: "Francis Bacon" },
         { text: "Yo soy aquello que soy", author: "Popeye" },
@@ -138,6 +132,7 @@ async function saveToNotion(quote, dateStr) {
         { text: "Era viernes", author: "El Mundo" },
         { text: "Que la suerte te acompañe", author: "Various" }
     ];
+    
     const enQuotes = [
         { text: "Knowledge is power.", author: "Francis Bacon" },
         { text: "I am what I am", author: "Popeye" },
@@ -164,96 +159,56 @@ async function saveToNotion(quote, dateStr) {
         { text: "May luck be with you", author: "Various" }
     ];
     
-    const esQuote = esQuotes[dayOfYear % esQuotes.length];
-    const enQuote = enQuotes[dayOfYear % enQuotes.length];
-    
+    return {
+        es: esQuotes[dayOfYear % esQuotes.length],
+        en: enQuotes[dayOfYear % enQuotes.length]
+    };
+}
+
+// Save to Notion via Vercel API route
+async function saveToNotion() {
     try {
-        const response = await fetch('https://api.notion.com/v1/pages', {
+        const quotes = getBothQuotes();
+        
+        const response = await fetch('/api/save-quote', {
             method: 'POST',
             headers: {
-                'Authorization': 'Bearer ' + NOTION_API_KEY,
-                'Notion-Version': '2022-06-28',
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                parent: { page_id: NOTION_PAGE_ID },
-                properties: {
-                    title: [
-                        {
-                            text: {
-                                content: `${esQuote.text} — ${esQuote.author} / ${enQuote.text} — ${enQuote.author}`
-                            }
-                        }
-                    ]
-                },
-                children: [
-                    {
-                        object: 'block',
-                        type: 'paragraph',
-                        paragraph: {
-                            rich_text: [
-                                {
-                                    text: {
-                                        content: `📅 Date: ${dateStr}`
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        object: 'block',
-                        type: 'paragraph',
-                        paragraph: {
-                            rich_text: [
-                                {
-                                    text: {
-                                        content: `🇪🇸 ES: "${esQuote.text}" — ${esQuote.author}`
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        object: 'block',
-                        type: 'paragraph',
-                        paragraph: {
-                            rich_text: [
-                                {
-                                    text: {
-                                        content: `🇬🇧 EN: "${enQuote.text}" — ${enQuote.author}`
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                ]
+                quote_es: quotes.es.text,
+                quote_en: quotes.en.text,
+                author_es: quotes.es.author,
+                author_en: quotes.en.author,
+                date: isoDate
             })
         });
         
-        if (response.ok) {
-            console.log('✅ Cita guardada en Notion');
-            return true;
-        } else {
-            console.log('⚠️ No se pudo guardar en Notion');
-            return false;
+        if (!response.ok) {
+            const error = await response.json();
+            console.error('API error:', error);
+            return { success: false, error: error.error || 'Unknown error' };
         }
-    } catch (e) {
-        console.log('Error:', e);
-        return false;
+        
+        const data = await response.json();
+        console.log('Saved to Notion:', data);
+        return { success: true, data };
+        
+    } catch (error) {
+        console.error('Save error:', error);
+        return { success: false, error: error.message };
     }
 }
 
 // Check if already saved today (using localStorage)
 function hasSavedToday() {
     const lastSaved = localStorage.getItem('quoteSavedDate');
-    const todayStr = today.toISOString().split('T')[0];
-    return lastSaved === todayStr;
+    return lastSaved === isoDate;
 }
 
 // Mark as saved
 function markAsSaved() {
-    const todayStr = today.toISOString().split('T')[0];
-    localStorage.setItem('quoteSavedDate', todayStr);
+    localStorage.setItem('quoteSavedDate', isoDate);
 }
 
 // Display the quote
@@ -272,8 +227,58 @@ setTimeout(async () => {
     // Auto-save to Notion if not saved today
     if (!hasSavedToday()) {
         document.getElementById('status').textContent = t.saving;
-        await saveToNotion(quote, dateStr);
-        markAsSaved();
-        document.getElementById('status').textContent = t.saved;
+        
+        const result = await saveToNotion();
+        
+        if (result.success) {
+            markAsSaved();
+            document.getElementById('status').textContent = t.saved;
+        } else {
+            document.getElementById('status').textContent = `${t.error}: ${result.error}`;
+            // Keep trying? Or show manual save button?
+        }
     }
 }, 500);
+
+// Optional: Add manual save button for debugging
+function addManualSaveButton() {
+    const button = document.createElement('button');
+    button.textContent = '💾 Guardar manualmente';
+    button.style.cssText = `
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        padding: 10px 15px;
+        background: #333;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-family: 'Roboto', sans-serif;
+        z-index: 1000;
+    `;
+    button.onclick = async () => {
+        button.disabled = true;
+        button.textContent = 'Guardando...';
+        
+        const result = await saveToNotion();
+        
+        if (result.success) {
+            button.textContent = '✅ Guardado';
+            markAsSaved();
+        } else {
+            button.textContent = '❌ Error';
+            alert(`Error: ${result.error}`);
+        }
+        
+        setTimeout(() => {
+            button.disabled = false;
+            button.textContent = '💾 Guardar manualmente';
+        }, 3000);
+    };
+    
+    document.body.appendChild(button);
+}
+
+// Add button for debugging (comentado por defecto)
+// addManualSaveButton();
