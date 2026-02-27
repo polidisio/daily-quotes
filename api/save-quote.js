@@ -18,9 +18,13 @@ export default async function handler(req, res) {
             return res.status(400).json({ error: 'Missing required fields' });
         }
         
-        // USAR EL DATABASE ID DIRECTAMENTE
-        const NOTION_API_KEY = process.env.NOTION_API_KEY || "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";
-        const NOTION_DATABASE_ID = "314eca7b-0db6-81cd-a7f7-dabe228c19f4";
+        // Usar variables de entorno
+        const NOTION_API_KEY = process.env.NOTION_API_KEY;
+        const NOTION_DATABASE_ID = process.env.NOTION_DATABASE_ID || "314eca7b-0db6-81cd-a7f7-dabe228c19f4";
+        
+        if (!NOTION_API_KEY) {
+            return res.status(500).json({ error: 'Missing NOTION_API_KEY' });
+        }
         
         console.log('Saving to database:', NOTION_DATABASE_ID);
         
@@ -67,8 +71,7 @@ export default async function handler(req, res) {
         if (!response.ok) {
             return res.status(response.status).json({
                 error: 'Failed to save to Notion',
-                details: responseText,
-                databaseId: NOTION_DATABASE_ID
+                details: responseText
             });
         }
         
