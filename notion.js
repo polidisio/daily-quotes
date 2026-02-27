@@ -166,7 +166,7 @@ async function saveToNotion() {
     try {
         document.getElementById('status').textContent = t.saving;
         
-        const response = await fetch('/api/save-quote-simple-db', {
+        const response = await fetch('/api/save-quote-final', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -181,7 +181,7 @@ async function saveToNotion() {
             return { 
                 success: true, 
                 data: result,
-                message: `Guardado con contenido enriquecido`
+                message: `Guardado en columnas organizadas`
             };
         } else {
             // Mostrar error en pantalla
