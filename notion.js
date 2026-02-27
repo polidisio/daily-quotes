@@ -1,4 +1,4 @@
-// notion-debug.js - Versión con debugging mejorado
+// notion-visible-errors.js - Muestra errores en pantalla
 const DEBUG = true;
 
 // Detect language
@@ -13,7 +13,10 @@ const translations = {
         saved: 'Guardado en Notion ✓',
         error: 'Error al guardar',
         testing: 'Probando conexión...',
-        ready: 'Listo'
+        ready: 'Listo',
+        debug: 'Modo depuración',
+        showDetails: 'Mostrar detalles',
+        hideDetails: 'Ocultar detalles'
     },
     en: {
         loading: 'Loading quote of the day...',
@@ -22,21 +25,24 @@ const translations = {
         saved: 'Saved to Notion ✓',
         error: 'Error saving',
         testing: 'Testing connection...',
-        ready: 'Ready'
+        ready: 'Ready',
+        debug: 'Debug mode',
+        showDetails: 'Show details',
+        hideDetails: 'Hide details'
     }
 };
 
 const t = translations[isSpanish ? 'es' : 'en'];
 
-// Citas (igual que antes)
+// Citas (versión corta para ejemplo)
 const fallbackQuotes = isSpanish ? [
     { text: "El conocimiento es poder.", author: "Francis Bacon" },
     { text: "Yo soy aquello que soy", author: "Popeye" },
-    // ... resto de citas
+    { text: "Que la fuerza te acompañe", author: "Yoda" }
 ] : [
     { text: "Knowledge is power.", author: "Francis Bacon" },
     { text: "I am what I am", author: "Popeye" },
-    // ... resto de citas
+    { text: "May the Force be with you", author: "Yoda" }
 ];
 
 // Get current date
@@ -66,13 +72,13 @@ function getBothQuotes() {
     const esQuotes = [
         { text: "El conocimiento es poder.", author: "Francis Bacon" },
         { text: "Yo soy aquello que soy", author: "Popeye" },
-        // ... resto
+        { text: "Que la fuerza te acompañe", author: "Yoda" }
     ];
     
     const enQuotes = [
         { text: "Knowledge is power.", author: "Francis Bacon" },
         { text: "I am what I am", author: "Popeye" },
-        // ... resto
+        { text: "May the Force be with you", author: "Yoda" }
     ];
     
     return {
@@ -81,39 +87,70 @@ function getBothQuotes() {
     };
 }
 
-// Test Notion connection first
-async function testNotionConnection() {
-    try {
-        if (DEBUG) console.log('Testing Notion connection...');
-        
-        const response = await fetch('/api/test-notion', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ test: true })
-        });
-        
-        const result = await response.json();
-        
-        if (DEBUG) console.log('Test result:', result);
-        
-        return {
-            success: response.ok,
-            data: result,
-            status: response.status
-        };
-        
-    } catch (error) {
-        if (DEBUG) console.error('Test failed:', error);
-        return {
-            success: false,
-            error: error.message
-        };
+// Display error on page
+function showErrorOnPage(title, error, details = null) {
+    const errorDiv = document.createElement('div');
+    errorDiv.id = 'error-display';
+    errorDiv.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #ffebee;
+        border: 2px solid #f44336;
+        border-radius: 8px;
+        padding: 15px;
+        max-width: 500px;
+        z-index: 9999;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        font-family: 'Roboto', sans-serif;
+    `;
+    
+    let detailsHtml = '';
+    if (details) {
+        detailsHtml = `
+            <div style="margin-top: 10px; font-size: 12px;">
+                <strong>Detalles:</strong>
+                <pre style="background: white; padding: 10px; border-radius: 4px; overflow: auto; max-height: 200px;">
+${JSON.stringify(details, null, 2)}
+                </pre>
+            </div>
+        `;
     }
+    
+    errorDiv.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <strong style="color: #d32f2f;">⚠️ ${title}</strong>
+            <button onclick="document.getElementById('error-display').remove()" 
+                    style="background: none; border: none; font-size: 20px; cursor: pointer; color: #666;">
+                ×
+            </button>
+        </div>
+        <div style="margin-top: 8px; color: #333;">
+            ${error}
+        </div>
+        ${detailsHtml}
+        <div style="margin-top: 10px; font-size: 12px; color: #666;">
+            <button onclick="copyErrorToClipboard()" style="padding: 4px 8px; margin-right: 5px;">
+                📋 Copiar error
+            </button>
+            <button onclick="location.reload()" style="padding: 4px 8px;">
+                🔄 Reintentar
+            </button>
+        </div>
+    `;
+    
+    document.body.appendChild(errorDiv);
+    
+    // Add to window for button functions
+    window.copyErrorToClipboard = function() {
+        const errorText = `Error: ${title}\n${error}\n${details ? JSON.stringify(details, null, 2) : ''}`;
+        navigator.clipboard.writeText(errorText).then(() => {
+            alert('Error copiado al portapapeles');
+        });
+    };
 }
 
-// Save to Notion (try multiple methods)
+// Save to Notion with detailed error reporting
 async function saveToNotion() {
     const quotes = getBothQuotes();
     const data = {
@@ -124,13 +161,12 @@ async function saveToNotion() {
         date: isoDate
     };
     
-    if (DEBUG) console.log('Saving data:', data);
+    console.log('📤 Enviando a Notion:', data);
     
-    // Método 1: API normal
     try {
-        document.getElementById('status').textContent = t.saving + ' (método 1)...';
+        document.getElementById('status').textContent = t.saving;
         
-        const response = await fetch('/api/save-quote', {
+        const response = await fetch('/api/save-quote-debug', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -139,44 +175,38 @@ async function saveToNotion() {
         });
         
         const result = await response.json();
+        console.log('📥 Respuesta de Notion:', result);
         
         if (response.ok) {
-            if (DEBUG) console.log('Success with method 1:', result);
-            return { success: true, method: 'normal', data: result };
+            return { 
+                success: true, 
+                data: result,
+                message: `Guardado con método: ${result.method}`
+            };
         } else {
-            if (DEBUG) console.log('Method 1 failed:', result);
+            // Mostrar error en pantalla
+            showErrorOnPage(
+                'Error al guardar en Notion',
+                `Status: ${response.status} - ${result.error || 'Error desconocido'}`,
+                result
+            );
             
-            // Método 2: Database version
-            document.getElementById('status').textContent = t.saving + ' (método 2)...';
-            
-            const dbResponse = await fetch('/api/save-quote-db', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
-            });
-            
-            const dbResult = await dbResponse.json();
-            
-            if (dbResponse.ok) {
-                if (DEBUG) console.log('Success with method 2 (DB):', dbResult);
-                return { success: true, method: 'database', data: dbResult };
-            } else {
-                if (DEBUG) console.log('Method 2 also failed:', dbResult);
-                return { 
-                    success: false, 
-                    error: 'All methods failed',
-                    details: {
-                        method1: result,
-                        method2: dbResult
-                    }
-                };
-            }
+            return { 
+                success: false, 
+                error: result,
+                status: response.status
+            };
         }
         
     } catch (error) {
-        if (DEBUG) console.error('Save error:', error);
+        console.error('❌ Error de red:', error);
+        
+        showErrorOnPage(
+            'Error de conexión',
+            `No se pudo conectar con el servidor: ${error.message}`,
+            { stack: error.stack }
+        );
+        
         return {
             success: false,
             error: error.message
@@ -201,7 +231,7 @@ const quote = getDailyQuote();
 // Set loading text
 document.getElementById('quote').textContent = t.loading;
 
-// Load quote and test/save
+// Load quote and save
 setTimeout(async () => {
     document.getElementById('quote').textContent = `"${quote.text}"`;
     document.getElementById('author').textContent = `— ${quote.author}`;
@@ -213,73 +243,99 @@ setTimeout(async () => {
         return;
     }
     
-    // Test connection first
-    document.getElementById('status').textContent = t.testing;
-    const testResult = await testNotionConnection();
-    
-    if (!testResult.success) {
-        document.getElementById('status').textContent = `${t.error}: Conexión fallida`;
-        if (DEBUG) console.error('Connection test failed:', testResult);
-        return;
-    }
-    
     // Try to save
     const saveResult = await saveToNotion();
     
     if (saveResult.success) {
         markAsSaved();
-        document.getElementById('status').textContent = `${t.saved} (${saveResult.method})`;
-        if (DEBUG) console.log('Save successful:', saveResult);
-    } else {
-        document.getElementById('status').textContent = `${t.error}: Ver consola`;
-        if (DEBUG) console.error('Save failed:', saveResult);
+        document.getElementById('status').textContent = `${t.saved} ✓`;
         
-        // Show error details in console
-        console.error('=== NOTION SAVE ERROR ===');
-        console.error('Date:', isoDate);
-        console.error('Quote:', quote);
-        console.error('Error details:', saveResult);
-        console.error('=== END ERROR ===');
+        // Mostrar éxito
+        const successDiv = document.createElement('div');
+        successDiv.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #e8f5e9;
+            border: 2px solid #4caf50;
+            border-radius: 8px;
+            padding: 15px;
+            z-index: 9999;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        `;
+        successDiv.innerHTML = `
+            <strong>✅ Guardado en Notion</strong>
+            <div style="margin-top: 5px; font-size: 14px;">
+                Método: ${saveResult.data.method}<br>
+                <a href="${saveResult.data.url}" target="_blank" style="color: #2196f3;">
+                    Ver en Notion
+                </a>
+            </div>
+            <button onclick="this.parentElement.remove()" 
+                    style="position: absolute; top: 5px; right: 5px; background: none; border: none; cursor: pointer;">
+                ×
+            </button>
+        `;
+        document.body.appendChild(successDiv);
+        
+        setTimeout(() => {
+            if (successDiv.parentElement) {
+                successDiv.remove();
+            }
+        }, 5000);
+        
+    } else {
+        document.getElementById('status').textContent = `${t.error} ❌`;
+        
+        // El error ya se muestra con showErrorOnPage
+        console.error('Error completo:', saveResult);
     }
 }, 500);
 
-// Add debug panel
-function addDebugPanel() {
-    const panel = document.createElement('div');
-    panel.id = 'debug-panel';
-    panel.style.cssText = `
+// Add debug info panel
+function addDebugInfo() {
+    const info = document.createElement('div');
+    info.style.cssText = `
         position: fixed;
         bottom: 10px;
         left: 10px;
-        background: rgba(0,0,0,0.8);
+        background: rgba(0,0,0,0.7);
         color: white;
         padding: 10px;
         border-radius: 5px;
         font-family: monospace;
-        font-size: 12px;
-        max-width: 300px;
+        font-size: 11px;
         z-index: 1000;
-        display: ${DEBUG ? 'block' : 'none'};
+        max-width: 300px;
     `;
     
-    panel.innerHTML = `
-        <div><strong>Debug Mode</strong></div>
-        <div>Date: ${isoDate}</div>
-        <div>Saved today: ${hasSavedToday() ? 'Yes' : 'No'}</div>
-        <button onclick="location.reload()">Reload</button>
-        <button onclick="localStorage.removeItem('quoteSavedDate'); location.reload();">Reset Save</button>
+    info.innerHTML = `
+        <div><strong>${t.debug}</strong></div>
+        <div>Fecha: ${isoDate}</div>
+        <div>Guardado hoy: ${hasSavedToday() ? 'Sí' : 'No'}</div>
+        <div>API: /api/save-quote-debug</div>
+        <div style="margin-top: 5px;">
+            <button onclick="localStorage.removeItem('quoteSavedDate'); location.reload();" 
+                    style="padding: 3px 6px; font-size: 10px;">
+                🔄 Reset save
+            </button>
+            <button onclick="console.clear(); location.reload();" 
+                    style="padding: 3px 6px; font-size: 10px; margin-left: 5px;">
+                🧹 Clear console
+            </button>
+        </div>
     `;
     
-    document.body.appendChild(panel);
+    document.body.appendChild(info);
 }
 
+// Initialize
 if (DEBUG) {
-    addDebugPanel();
-    console.log('Daily Quotes Debug Mode Enabled');
+    addDebugInfo();
+    console.log('=== DAILY QUOTES DEBUG ===');
     console.log('Date:', isoDate, dateStr);
-    console.log('Quote:', getDailyQuote());
-    console.log('API Endpoints:');
-    console.log('- /api/save-quote');
-    console.log('- /api/save-quote-db');
-    console.log('- /api/test-notion');
+    console.log('Quote:', quote);
+    console.log('LocalStorage saved:', hasSavedToday());
+    console.log('API endpoint:', '/api/save-quote-debug');
+    console.log('=======================');
 }
