@@ -166,7 +166,7 @@ async function saveToNotion() {
     try {
         document.getElementById('status').textContent = t.saving;
         
-        const response = await fetch('/api/save-quote-debug', {
+        const response = await fetch('/api/save-quote-enhanced', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
