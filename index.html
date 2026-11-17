@@ -1,239 +1,111 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daily Quotes - WordPad</title>
-    <style>
-        * { box-sizing: border-box; }
-        body {
-            background: #008080;
-            font-family: 'Tahoma', 'Verdana', sans-serif;
-            margin: 0;
-            padding: 20px;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            padding-top: 40px;
-        }
-        
-        /* Desktop - Icons on LEFT */
-        .desktop {
-            display: flex;
-            flex-direction: column;
-            gap: 18px;
-            position: fixed;
-            left: 8px;
-            top: 8px;
-        }
-        .desktop-icon {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            cursor: pointer;
-            width: 72px;
-            padding: 2px;
-        }
-        .desktop-icon:hover { background: #000080; }
-        .desktop-icon:active { opacity: 0.7; }
-        
-        .desktop-icon-img {
-            width: 48px;
-            height: 48px;
-            margin-bottom: 2px;
-        }
-        
-        /* Window */
-        .window {
-            background: #c0c0c0;
-            border: 2px solid;
-            border-color: #ffffff #808080 #808080 #ffffff;
-            box-shadow: 2px 2px 10px rgba(0,0,0,0.3);
-            max-width: 700px;
-            width: 100%;
-            margin-top: 20px;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        /* Title Bar */
-        .title-bar {
-            background: linear-gradient(90deg, #000080, #1084d0);
-            padding: 2px 3px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            height: 22px;
-            flex-shrink: 0;
-        }
-        .title-bar-text { 
-            color: white; 
-            font-size: 12px; 
-            font-weight: bold;
-        }
-        .title-bar-controls { display: flex; gap: 2px; }
-        .title-bar-btn {
-            width: 14px; height: 12px;
-            background: #c0c0c0;
-            border: 1px solid;
-            border-color: #ffffff #808080 #808080 #ffffff;
-            font-size: 9px; line-height: 10px;
-            text-align: center; cursor: pointer;
-            font-weight: bold;
-        }
-        .title-bar-btn:active { border-color: #808080 #ffffff #ffffff #808080; }
-        
-        /* Menu Bar */
-        .menu-bar {
-            background: #c0c0c0;
-            padding: 2px 4px;
-            font-size: 11px;
-            display: flex; gap: 10px;
-            border-bottom: 1px solid #808080;
-            flex-shrink: 0;
-        }
-        .menu-item { cursor: pointer; padding: 1px 3px; }
-        .menu-item:hover { background: #000080; color: white; }
-        
-        /* Toolbar */
-        .toolbar {
-            background: #c0c0c0;
-            padding: 3px 4px;
-            display: flex; gap: 3px;
-            border-bottom: 1px solid #808080;
-            flex-wrap: wrap;
-            flex-shrink: 0;
-        }
-        .toolbar-btn {
-            width: 20px; height: 18px;
-            background: #c0c0c0;
-            border: 1px solid;
-            border-color: #ffffff #808080 #808080 #ffffff;
-            cursor: pointer;
-            display: flex; align-items: center;
-            justify-content: center; font-size: 11px;
-            font-weight: bold;
-        }
-        .toolbar-btn:active { border-color: #808080 #ffffff #ffffff #808080; }
-        .toolbar-separator { width: 2px; background: #808080; border-right: 1px solid #ffffff; margin: 0 2px; }
-        
-        /* Editor Container */
-        .editor-container {
-            background: #ffffff;
-            border: 2px solid;
-            border-color: #808080 #ffffff #ffffff #808080;
-            margin: 3px;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            min-height: 300px;
-        }
-        
-        /* Paper */
-        .paper {
-            padding: 15px 20px;
-            font-family: 'Courier New', monospace;
-            font-size: 14px;
-            line-height: 1.5;
-            color: #000000;
-            flex: 1;
-        }
-        
-        .quote-text {
-            font-style: italic;
-            font-size: 15px;
-            margin-bottom: 15px;
-            padding: 8px;
-            background: #ffffd0;
-            border: 1px solid #808080;
-        }
-        .quote-author { text-align: right; font-weight: bold; color: #000080; }
-        .quote-date { text-align: right; font-size: 11px; color: #808080; margin-top: 8px; }
-        
-        /* Status Bar */
-        .status-bar {
-            background: #c0c0c0;
-            display: flex;
-            font-size: 11px;
-            border-top: 1px solid #808080;
-            flex-shrink: 0;
-        }
-        .status-section {
-            padding: 2px 6px;
-            border: 1px solid;
-            border-color: #808080 #ffffff #ffffff #808080;
-            margin: 2px;
-            white-space: nowrap;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Una cita nueva cada día, con estética de Windows 98.">
+  <title>Daily Quotes - WordPad</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <!-- Desktop Icons (LEFT, no labels) -->
-    <div class="desktop">
-        <div class="desktop-icon">
-            <img src="icons/my-computer.png" alt="My Computer" class="desktop-icon-img">
+  <main id="desktop" class="desktop">
+    <ul class="icons">
+      <li><button type="button" class="desktop-icon" data-open="system" data-i18n-title="icon-system" title="Mi PC"><img src="icons/my-computer.png" alt="" width="48" height="48"></button></li>
+      <li><button type="button" class="desktop-icon" data-open="bin" data-i18n-title="icon-bin" title="Papelera de reciclaje"><img src="icons/recycle-bin.png" alt="" width="48" height="48"></button></li>
+      <li><button type="button" class="desktop-icon" data-open="folder" data-i18n-title="icon-folder" title="Mis documentos"><img src="icons/my-documents.png" alt="" width="38" height="38"></button></li>
+      <li><button type="button" class="desktop-icon" data-open="search" data-i18n-title="icon-search" title="Buscar citas"><img src="icons/internet.png" alt="" width="48" height="48"></button></li>
+    </ul>
+
+    <section id="wordpad" class="window main-window" aria-labelledby="wp-title" tabindex="-1">
+      <div class="title-bar">
+        <span class="title-bar-text" id="wp-title">citas.txt - WordPad</span>
+        <div class="title-bar-controls">
+          <button type="button" class="title-bar-btn" data-ctl="min">_</button>
+          <button type="button" class="title-bar-btn" data-ctl="max">&#9633;</button>
+          <button type="button" class="title-bar-btn" data-ctl="close">&times;</button>
         </div>
-        <div class="desktop-icon">
-            <img src="icons/recycle-bin.png" alt="Recycle Bin" class="desktop-icon-img">
+      </div>
+
+      <nav class="menu-bar" aria-label="Menú">
+        <div class="menu">
+          <button type="button" class="menu-label" aria-haspopup="true" aria-expanded="false" data-i18n="menu-file">Archivo</button>
+          <div class="menu-list" role="menu">
+            <button type="button" role="menuitem" data-action="open-folder" data-i18n="act-open">Abrir...</button>
+            <hr>
+            <button type="button" role="menuitem" data-action="close-wordpad" data-i18n="act-close">Salir</button>
+          </div>
         </div>
-        <div class="desktop-icon">
-            <img src="icons/my-documents.png" alt="My Documents" class="desktop-icon-img">
+        <div class="menu">
+          <button type="button" class="menu-label" aria-haspopup="true" aria-expanded="false" data-i18n="menu-edit">Editar</button>
+          <div class="menu-list" role="menu">
+            <button type="button" role="menuitem" data-action="copy" data-i18n="act-copy">Copiar cita</button>
+            <button type="button" role="menuitem" id="menu-fav" data-action="fav">Añadir a favoritas</button>
+            <button type="button" role="menuitem" data-action="open-search" data-i18n="act-find">Buscar...</button>
+          </div>
         </div>
-        <div class="desktop-icon">
-            <img src="icons/internet.png" alt="Internet" class="desktop-icon-img">
+        <div class="menu">
+          <button type="button" class="menu-label" aria-haspopup="true" aria-expanded="false" data-i18n="menu-view">Ver</button>
+          <div class="menu-list" role="menu">
+            <button type="button" role="menuitem" data-action="prev" data-i18n="act-prev">Cita anterior</button>
+            <button type="button" role="menuitem" data-action="next" data-i18n="act-next">Cita siguiente</button>
+            <button type="button" role="menuitem" data-action="today" data-i18n="act-today">Hoy</button>
+            <hr>
+            <button type="button" role="menuitemradio" id="lang-es" aria-checked="false" data-action="lang-es" data-i18n="act-lang-es">Español</button>
+            <button type="button" role="menuitemradio" id="lang-en" aria-checked="false" data-action="lang-en" data-i18n="act-lang-en">English</button>
+          </div>
         </div>
-    </div>
-    
-    <!-- WordPad Window -->
-    <div class="window">
-        <div class="title-bar">
-            <div class="title-bar-text">citas.txt - WordPad</div>
-            <div class="title-bar-controls">
-                <div class="title-bar-btn">_</div>
-                <div class="title-bar-btn">□</div>
-                <div class="title-bar-btn">×</div>
-            </div>
+        <div class="menu">
+          <button type="button" class="menu-label" aria-haspopup="true" aria-expanded="false" data-i18n="menu-help">Ayuda</button>
+          <div class="menu-list" role="menu">
+            <button type="button" role="menuitem" data-action="about" data-i18n="act-about">Acerca de Citas Diarias</button>
+          </div>
         </div>
-        
-        <div class="menu-bar">
-            <span class="menu-item">Archivo</span>
-            <span class="menu-item">Editar</span>
-            <span class="menu-item">Ver</span>
-            <span class="menu-item">Insertar</span>
-            <span class="menu-item">Formato</span>
-            <span class="menu-item">Ayuda</span>
+      </nav>
+
+      <div class="toolbar" role="toolbar" aria-label="Herramientas">
+        <button type="button" class="toolbar-btn" data-action="prev" data-i18n-title="act-prev">&laquo;</button>
+        <button type="button" class="toolbar-btn" data-action="next" data-i18n-title="act-next">&raquo;</button>
+        <button type="button" class="toolbar-btn" id="btn-today" data-action="today" data-i18n-title="act-today">&#9679;</button>
+        <span class="toolbar-separator" role="separator"></span>
+        <button type="button" class="toolbar-btn" data-action="copy" data-i18n-title="act-copy">C</button>
+        <button type="button" class="toolbar-btn" id="btn-fav" data-action="fav" aria-pressed="false">F</button>
+      </div>
+
+      <div class="editor">
+        <article class="paper" aria-live="polite">
+          <blockquote class="quote-text" id="quote">...</blockquote>
+          <p class="quote-author" id="author"></p>
+          <p class="quote-date" id="date"></p>
+        </article>
+        <div class="status-bar">
+          <div class="status-section grow" id="status" role="status">...</div>
+          <div class="status-section" id="viewDate"></div>
+          <div class="status-section hide-narrow">100%</div>
+          <div class="status-section hide-narrow" id="currentDate"></div>
         </div>
-        
-        <div class="toolbar">
-            <div class="toolbar-btn">N</div>
-            <div class="toolbar-btn">A</div>
-            <div class="toolbar-btn">G</div>
-            <div class="toolbar-separator"></div>
-            <div class="toolbar-btn">X</div>
-            <div class="toolbar-btn">C</div>
-            <div class="toolbar-btn">V</div>
-            <div class="toolbar-separator"></div>
-            <div class="toolbar-btn"><b>B</b></div>
-            <div class="toolbar-btn"><i>I</i></div>
-        </div>
-        
-        <div class="editor-container">
-            <div class="paper">
-                <div class="quote-text" id="quote">Loading...</div>
-                <div class="quote-author" id="author"></div>
-                <div class="quote-date" id="date"></div>
-            </div>
-            
-            <div class="status-bar">
-                <div class="status-section" id="status">...</div>
-                <div class="status-section">Ln 1, Col 1</div>
-                <div class="status-section">100%</div>
-                <div class="status-section">CP1252</div>
-                <div class="status-section">Date: <span id="currentDate"></span></div>
-            </div>
-        </div>
-    </div>
-    
-    <script src="notion.js"></script>
+      </div>
+    </section>
+  </main>
+
+  <div id="start-menu" class="start-menu" hidden>
+    <button type="button" data-action="open-wordpad">citas.txt</button>
+    <button type="button" data-action="open-folder" data-i18n="start-folder">Mis documentos</button>
+    <button type="button" data-action="open-search" data-i18n="start-search">Buscar citas</button>
+    <button type="button" data-action="open-system" data-i18n="start-system">Propiedades del sistema</button>
+    <button type="button" data-action="open-calc" data-i18n="start-calc">Calculadora</button>
+    <button type="button" data-action="open-mines" data-i18n="start-mines">Buscaminas</button>
+    <hr>
+    <button type="button" data-action="about" data-i18n="act-about">Acerca de Citas Diarias</button>
+  </div>
+
+  <footer class="taskbar">
+    <button type="button" id="start-button" class="btn start-button" aria-haspopup="true" aria-expanded="false"><b data-i18n="start">Inicio</b></button>
+    <span class="taskbar-sep" role="separator"></span>
+    <div id="taskbar-apps" class="taskbar-apps"></div>
+    <time id="clock" class="tray"></time>
+  </footer>
+
+  <noscript><p class="noscript">Esta página necesita JavaScript para mostrar la cita del día.</p></noscript>
+  <script type="module" src="js/app.js"></script>
 </body>
 </html>
