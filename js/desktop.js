@@ -1,11 +1,11 @@
-// Comportamiento del "escritorio" retro: ventana (mover/minimizar/maximizar/cerrar),
-// menus desplegables, menu Inicio, reloj, iconos y cuadros de dialogo.
+// Escritorio retro: gestor de ventanas (mover, foco, minimizar, maximizar, cerrar),
+// barra de tareas, menus desplegables, menu Inicio, reloj, iconos y dialogos.
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
 const NARROW = window.matchMedia('(max-width: 720px)');
 
-/** Cuadro de dialogo modal estilo Windows. Devuelve una promesa con el boton pulsado. */
+/** Cuadro de dialogo modal estilo Windows. Devuelve una promesa con el id del boton pulsado. */
 export function showDialog({ title, message, buttons = [{ id: 'ok', label: 'OK' }] }) {
   return new Promise((resolve) => {
     const backdrop = document.createElement('div');
@@ -14,7 +14,7 @@ export function showDialog({ title, message, buttons = [{ id: 'ok', label: 'OK' 
       <div class="window dialog" role="alertdialog" aria-modal="true" aria-labelledby="dlg-title" aria-describedby="dlg-msg">
         <div class="title-bar"><span class="title-bar-text" id="dlg-title"></span></div>
         <div class="dialog-body">
-          <div class="dialog-icon" aria-hidden="true">!</div>
+          <div class="dialog-icon" aria-hidden="true">i</div>
           <p id="dlg-msg"></p>
         </div>
         <div class="dialog-buttons"></div>
@@ -41,7 +41,7 @@ export function showDialog({ title, message, buttons = [{ id: 'ok', label: 'OK' 
     });
     const onKey = (e) => {
       if (e.key === 'Escape') { e.stopPropagation(); close(buttons[buttons.length - 1].id); }
-      if (e.key === 'Tab') {   // atrapa el foco dentro del dialogo
+      if (e.key === 'Tab') {                       // atrapa el foco dentro del dialogo
         const f = $$('button', backdrop);
         const idx = f.indexOf(document.activeElement);
         e.preventDefault();
@@ -57,54 +57,172 @@ export function showDialog({ title, message, buttons = [{ id: 'ok', label: 'OK' 
  * @param {Record<string, () => void>} actions  Acciones de la app, enlazadas por data-action.
  */
 export function initDesktop(actions) {
-  const win = $('#wordpad');
-  const taskBtn = $('#task-wordpad');
+  const desktopEl = $('#desktop');
+  const taskApps = $('#taskbar-apps');
   const startBtn = $('#start-button');
   const startMenu = $('#start-menu');
-  const state = { open: true, minimized: false, maximized: false };
 
-  // ---------- Ventana ----------
-  function syncWindow() {
-    win.hidden = !state.open || state.minimized;
-    win.classList.toggle('maximized', state.maximized);
-    taskBtn.hidden = !state.open;
-    taskBtn.classList.toggle('active', state.open && !state.minimized);
-    taskBtn.setAttribute('aria-pressed', String(state.open && !state.minimized));
+  const wins = new Map();          // id -> { el, btn, open, minimized, maximized }
+  let zTop = 10;
+  let cascade = 0;
+  let activeId = null;
+  let ctlLabels = { min: 'Minimize', max: 'Maximize', close: 'Close' };
+
+  // ---------- Gestor de ventanas ----------
+  function sync(id) {
+    const w = wins.get(id);
+    const visible = w.open && !w.minimized;
+    w.el.hidden = !visible;
+    w.el.classList.toggle('maximized', w.maximized);
+    w.btn.hidden = !w.open;
+    const isActive = visible && activeId === id;
+    w.el.classList.toggle('active', isActive);
+    w.btn.classList.toggle('active', isActive);
+    w.btn.setAttribute('aria-pressed', String(isActive));
   }
-  const windowActions = {
-    minimize() { state.minimized = true; syncWindow(); },
-    maximize() { state.maximized = !state.maximized; syncWindow(); },
-    close() { state.open = false; state.minimized = false; syncWindow(); },
-    open() { state.open = true; state.minimized = false; syncWindow(); win.focus(); },
-    toggle() { state.minimized ? windowActions.open() : windowActions.minimize(); },
-  };
-  taskBtn.addEventListener('click', windowActions.toggle);
-  $('.title-bar', win).addEventListener('dblclick', (e) => {
-    if (!e.target.closest('.title-bar-controls')) windowActions.maximize();
-  });
+  const syncAll = () => wins.forEach((_, id) => sync(id));
 
-  // ---------- Arrastrar ----------
-  const bar = $('.title-bar', win);
-  let drag = null;
-  bar.addEventListener('pointerdown', (e) => {
-    if (e.target.closest('.title-bar-controls') || state.maximized || NARROW.matches || e.button !== 0) return;
-    const r = win.getBoundingClientRect();
-    win.classList.add('moved');             // pasa de centrado por CSS a coordenadas absolutas
-    win.style.left = `${r.left}px`;
-    win.style.top = `${r.top}px`;
-    drag = { dx: e.clientX - r.left, dy: e.clientY - r.top };
-    bar.setPointerCapture(e.pointerId);
-  });
-  bar.addEventListener('pointermove', (e) => {
-    if (!drag) return;
-    const maxX = window.innerWidth - 80;
-    const maxY = window.innerHeight - 28 - 30;   // sin tapar la barra de tareas
-    win.style.left = `${Math.min(Math.max(e.clientX - drag.dx, 80 - win.offsetWidth), maxX)}px`;
-    win.style.top = `${Math.min(Math.max(e.clientY - drag.dy, 0), maxY)}px`;
-  });
-  const endDrag = () => { drag = null; };
-  bar.addEventListener('pointerup', endDrag);
-  bar.addEventListener('pointercancel', endDrag);
+  function focusWindow(id) {
+    const w = wins.get(id);
+    if (!w || !w.open || w.minimized) return;
+    activeId = id;
+    w.el.style.zIndex = String(++zTop);
+    syncAll();
+  }
+  function activateTopmost() {
+    let best = null;
+    for (const [id, w] of wins) {
+      if (w.open && !w.minimized && (!best || +w.el.style.zIndex > +wins.get(best).el.style.zIndex)) best = id;
+    }
+    activeId = best;
+  }
+  function openWindow(id) {
+    const w = wins.get(id);
+    if (!w) return;
+    w.open = true;
+    w.minimized = false;
+    focusWindow(id);
+    w.el.focus({ preventScroll: true });
+  }
+  function minimizeWindow(id) {
+    wins.get(id).minimized = true;
+    if (activeId === id) activateTopmost();
+    syncAll();
+  }
+  function closeWindow(id) {
+    const w = wins.get(id);
+    w.open = false;
+    w.minimized = false;
+    w.maximized = false;
+    if (activeId === id) activateTopmost();
+    syncAll();
+  }
+  function toggleMaximize(id) {
+    const w = wins.get(id);
+    w.maximized = !w.maximized;
+    focusWindow(id);
+  }
+
+  /** Registra una ventana ya existente en el DOM (o recien creada) en el gestor. */
+  function registerWindow(el, id, title, { startOpen = true } = {}) {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'btn task-button';
+    btn.textContent = title;
+    taskApps.append(btn);
+
+    const w = { el, btn, open: startOpen, minimized: false, maximized: false };
+    wins.set(id, w);
+    el.style.zIndex = String(++zTop);
+
+    btn.addEventListener('click', () => {
+      if (w.minimized || activeId !== id) openWindow(id);   // restaurar o traer al frente
+      else minimizeWindow(id);
+    });
+    el.addEventListener('pointerdown', () => { if (activeId !== id) focusWindow(id); });
+
+    const bar = $('.title-bar', el);
+    bar.addEventListener('dblclick', (e) => { if (!e.target.closest('.title-bar-controls')) toggleMaximize(id); });
+    el.addEventListener('click', (e) => {
+      const ctl = e.target.closest('[data-ctl]');
+      if (!ctl || !el.contains(ctl)) return;
+      if (ctl.dataset.ctl === 'min') minimizeWindow(id);
+      if (ctl.dataset.ctl === 'max') toggleMaximize(id);
+      if (ctl.dataset.ctl === 'close') closeWindow(id);
+    });
+
+    // Arrastrar
+    let drag = null;
+    bar.addEventListener('pointerdown', (e) => {
+      if (e.target.closest('.title-bar-controls') || w.maximized || NARROW.matches || e.button !== 0) return;
+      const r = el.getBoundingClientRect();
+      el.classList.add('moved');               // pasa de centrado por CSS a coordenadas absolutas
+      el.style.left = `${r.left}px`;
+      el.style.top = `${r.top}px`;
+      drag = { dx: e.clientX - r.left, dy: e.clientY - r.top };
+      bar.setPointerCapture(e.pointerId);
+    });
+    bar.addEventListener('pointermove', (e) => {
+      if (!drag) return;
+      const maxX = window.innerWidth - 80;
+      const maxY = window.innerHeight - 28 - 30;   // sin tapar la barra de tareas
+      el.style.left = `${Math.min(Math.max(e.clientX - drag.dx, 80 - el.offsetWidth), maxX)}px`;
+      el.style.top = `${Math.min(Math.max(e.clientY - drag.dy, 0), maxY)}px`;
+    });
+    const endDrag = () => { drag = null; };
+    bar.addEventListener('pointerup', endDrag);
+    bar.addEventListener('pointercancel', endDrag);
+
+    if (startOpen) activeId = id;
+    setCtlLabels(ctlLabels);
+    syncAll();
+    return w;
+  }
+
+  /** Crea una ventana de aplicacion con barra de titulo y cuerpo vacio. */
+  function createWindow(id, title, { width = 420 } = {}) {
+    const el = document.createElement('section');
+    el.className = 'window app-window';
+    el.id = `win-${id}`;
+    el.tabIndex = -1;
+    el.setAttribute('aria-label', title);
+    el.style.width = `min(${width}px, calc(100vw - 100px))`;
+    const off = (cascade++ % 6) * 26;
+    el.style.left = `${110 + off}px`;
+    el.style.top = `${50 + off}px`;
+    el.innerHTML = `
+      <div class="title-bar">
+        <span class="title-bar-text"></span>
+        <div class="title-bar-controls">
+          <button type="button" class="title-bar-btn" data-ctl="min">_</button>
+          <button type="button" class="title-bar-btn" data-ctl="max">&#9633;</button>
+          <button type="button" class="title-bar-btn" data-ctl="close">&times;</button>
+        </div>
+      </div>
+      <div class="app-body"></div>`;
+    $('.title-bar-text', el).textContent = title;
+    desktopEl.append(el);
+    registerWindow(el, id, title, { startOpen: false });
+    return { el, body: $('.app-body', el) };
+  }
+
+  function setTitle(id, title) {
+    const w = wins.get(id);
+    if (!w) return;
+    const text = $('.title-bar-text', w.el);
+    if (text && w.el.classList.contains('app-window')) text.textContent = title;
+    w.btn.textContent = title;
+  }
+  function setCtlLabels(labels) {
+    ctlLabels = labels;
+    $$('[data-ctl]').forEach((b) => {
+      const l = labels[b.dataset.ctl];
+      b.setAttribute('aria-label', l);
+      b.title = l;
+    });
+  }
+
+  registerWindow($('#wordpad'), 'wordpad', $('#wp-title').textContent);
 
   // ---------- Menus desplegables ----------
   const menus = $$('.menu');
@@ -129,7 +247,11 @@ export function initDesktop(actions) {
   });
 
   // ---------- Menu Inicio ----------
-  const closeStart = () => { startMenu.hidden = true; startBtn.setAttribute('aria-expanded', 'false'); startBtn.classList.remove('active'); };
+  const closeStart = () => {
+    startMenu.hidden = true;
+    startBtn.setAttribute('aria-expanded', 'false');
+    startBtn.classList.remove('active');
+  };
   startBtn.addEventListener('click', (e) => {
     e.stopPropagation();
     const willOpen = startMenu.hidden;
@@ -141,32 +263,31 @@ export function initDesktop(actions) {
 
   document.addEventListener('click', (e) => {
     if (!e.target.closest('.menu')) closeMenus();
-    if (!e.target.closest('#start-menu')) closeStart();
+    if (!e.target.closest('#start-menu') && !e.target.closest('#start-button')) closeStart();
   });
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') { closeMenus(); closeStart(); }
   });
 
-  // ---------- Acciones (menus, barra de herramientas, controles) ----------
-  const all = { ...actions, ...windowActions, 'open-window': windowActions.open };
+  // ---------- Acciones (menus, barra de herramientas, Inicio) ----------
   document.addEventListener('click', (e) => {
     const el = e.target.closest('[data-action]');
     if (!el || el.disabled) return;
     closeMenus();
     closeStart();
-    all[el.dataset.action]?.();
+    actions[el.dataset.action]?.();
   });
 
   // ---------- Iconos del escritorio ----------
   const icons = $$('.desktop-icon');
   const select = (icon) => icons.forEach((i) => i.classList.toggle('selected', i === icon));
   icons.forEach((icon) => {
-    icon.addEventListener('click', (e) => { e.stopPropagation(); select(icon); });
-    const run = () => (icon.dataset.open === 'wordpad' ? windowActions.open() : actions.unavailable?.());
+    icon.addEventListener('click', (e) => { e.stopPropagation(); select(icon); closeStart(); });
+    const run = () => actions[`open-${icon.dataset.open}`]?.();
     icon.addEventListener('dblclick', run);
     icon.addEventListener('keydown', (e) => { if (e.key === 'Enter') run(); });
   });
-  $('#desktop').addEventListener('click', () => select(null));
+  desktopEl.addEventListener('click', (e) => { if (e.target === desktopEl) select(null); });
 
   // ---------- Reloj ----------
   const clock = $('#clock');
@@ -178,6 +299,14 @@ export function initDesktop(actions) {
   tickClock();
   setInterval(tickClock, 15_000);
 
-  syncWindow();
-  return { setClockTitle: (text) => { clock.title = text; } };
+  return {
+    createWindow,
+    openWindow,
+    closeWindow,
+    isOpen: (id) => wins.get(id)?.open ?? false,
+    has: (id) => wins.has(id),
+    setTitle,
+    setCtlLabels,
+    setClockTitle: (text) => { clock.title = text; },
+  };
 }

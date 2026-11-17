@@ -10,19 +10,19 @@
 <body>
   <main id="desktop" class="desktop">
     <ul class="icons">
-      <li><button type="button" class="desktop-icon" data-open="computer" title="My Computer" aria-label="My Computer"><img src="icons/my-computer.png" alt="" width="48" height="48"></button></li>
-      <li><button type="button" class="desktop-icon" data-open="bin" title="Recycle Bin" aria-label="Recycle Bin"><img src="icons/recycle-bin.png" alt="" width="48" height="48"></button></li>
-      <li><button type="button" class="desktop-icon" data-open="wordpad" title="citas.txt" aria-label="citas.txt"><img src="icons/my-documents.png" alt="" width="38" height="38"></button></li>
-      <li><button type="button" class="desktop-icon" data-open="internet" title="Internet" aria-label="Internet"><img src="icons/internet.png" alt="" width="48" height="48"></button></li>
+      <li><button type="button" class="desktop-icon" data-open="system" data-i18n-title="icon-system" title="Mi PC"><img src="icons/my-computer.png" alt="" width="48" height="48"></button></li>
+      <li><button type="button" class="desktop-icon" data-open="bin" data-i18n-title="icon-bin" title="Papelera de reciclaje"><img src="icons/recycle-bin.png" alt="" width="48" height="48"></button></li>
+      <li><button type="button" class="desktop-icon" data-open="folder" data-i18n-title="icon-folder" title="Mis documentos"><img src="icons/my-documents.png" alt="" width="38" height="38"></button></li>
+      <li><button type="button" class="desktop-icon" data-open="search" data-i18n-title="icon-search" title="Buscar citas"><img src="icons/internet.png" alt="" width="48" height="48"></button></li>
     </ul>
 
     <section id="wordpad" class="window main-window" aria-labelledby="wp-title" tabindex="-1">
       <div class="title-bar">
         <span class="title-bar-text" id="wp-title">citas.txt - WordPad</span>
         <div class="title-bar-controls">
-          <button type="button" class="title-bar-btn" data-action="minimize" aria-label="Minimizar">_</button>
-          <button type="button" class="title-bar-btn" data-action="maximize" aria-label="Maximizar">&#9633;</button>
-          <button type="button" class="title-bar-btn" data-action="close" aria-label="Cerrar">&times;</button>
+          <button type="button" class="title-bar-btn" data-ctl="min">_</button>
+          <button type="button" class="title-bar-btn" data-ctl="max">&#9633;</button>
+          <button type="button" class="title-bar-btn" data-ctl="close">&times;</button>
         </div>
       </div>
 
@@ -30,15 +30,16 @@
         <div class="menu">
           <button type="button" class="menu-label" aria-haspopup="true" aria-expanded="false" data-i18n="menu-file">Archivo</button>
           <div class="menu-list" role="menu">
-            <button type="button" role="menuitem" data-action="save" data-i18n="act-save">Guardar en Notion</button>
+            <button type="button" role="menuitem" data-action="open-folder" data-i18n="act-open">Abrir...</button>
             <hr>
-            <button type="button" role="menuitem" data-action="close" data-i18n="act-close">Salir</button>
+            <button type="button" role="menuitem" data-action="close-wordpad" data-i18n="act-close">Salir</button>
           </div>
         </div>
         <div class="menu">
           <button type="button" class="menu-label" aria-haspopup="true" aria-expanded="false" data-i18n="menu-edit">Editar</button>
           <div class="menu-list" role="menu">
             <button type="button" role="menuitem" data-action="copy" data-i18n="act-copy">Copiar cita</button>
+            <button type="button" role="menuitem" data-action="open-search" data-i18n="act-find">Buscar...</button>
           </div>
         </div>
         <div class="menu">
@@ -66,7 +67,6 @@
         <button type="button" class="toolbar-btn" id="btn-today" data-action="today" data-i18n-title="act-today">&#9679;</button>
         <span class="toolbar-separator" role="separator"></span>
         <button type="button" class="toolbar-btn" data-action="copy" data-i18n-title="act-copy">C</button>
-        <button type="button" class="toolbar-btn" data-action="save" data-i18n-title="act-save">G</button>
       </div>
 
       <div class="editor">
@@ -86,7 +86,10 @@
   </main>
 
   <div id="start-menu" class="start-menu" hidden>
-    <button type="button" data-action="open-window" id="start-open">citas.txt</button>
+    <button type="button" data-action="open-wordpad">citas.txt</button>
+    <button type="button" data-action="open-folder" data-i18n="start-folder">Mis documentos</button>
+    <button type="button" data-action="open-search" data-i18n="start-search">Buscar citas</button>
+    <button type="button" data-action="open-system" data-i18n="start-system">Propiedades del sistema</button>
     <hr>
     <button type="button" data-action="about" data-i18n="act-about">Acerca de Citas Diarias</button>
   </div>
@@ -94,7 +97,7 @@
   <footer class="taskbar">
     <button type="button" id="start-button" class="btn start-button" aria-haspopup="true" aria-expanded="false"><b data-i18n="start">Inicio</b></button>
     <span class="taskbar-sep" role="separator"></span>
-    <button type="button" id="task-wordpad" class="btn task-button" aria-pressed="true">citas.txt - WordPad</button>
+    <div id="taskbar-apps" class="taskbar-apps"></div>
     <time id="clock" class="tray"></time>
   </footer>
 
