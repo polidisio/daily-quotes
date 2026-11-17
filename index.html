@@ -39,6 +39,7 @@
           <button type="button" class="menu-label" aria-haspopup="true" aria-expanded="false" data-i18n="menu-edit">Editar</button>
           <div class="menu-list" role="menu">
             <button type="button" role="menuitem" data-action="copy" data-i18n="act-copy">Copiar cita</button>
+            <button type="button" role="menuitem" id="menu-fav" data-action="fav">Añadir a favoritas</button>
             <button type="button" role="menuitem" data-action="open-search" data-i18n="act-find">Buscar...</button>
           </div>
         </div>
@@ -67,6 +68,7 @@
         <button type="button" class="toolbar-btn" id="btn-today" data-action="today" data-i18n-title="act-today">&#9679;</button>
         <span class="toolbar-separator" role="separator"></span>
         <button type="button" class="toolbar-btn" data-action="copy" data-i18n-title="act-copy">C</button>
+        <button type="button" class="toolbar-btn" id="btn-fav" data-action="fav" aria-pressed="false">F</button>
       </div>
 
       <div class="editor">
@@ -90,6 +92,8 @@
     <button type="button" data-action="open-folder" data-i18n="start-folder">Mis documentos</button>
     <button type="button" data-action="open-search" data-i18n="start-search">Buscar citas</button>
     <button type="button" data-action="open-system" data-i18n="start-system">Propiedades del sistema</button>
+    <button type="button" data-action="open-calc" data-i18n="start-calc">Calculadora</button>
+    <button type="button" data-action="open-mines" data-i18n="start-mines">Buscaminas</button>
     <hr>
     <button type="button" data-action="about" data-i18n="act-about">Acerca de Citas Diarias</button>
   </div>

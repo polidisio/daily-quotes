@@ -1,8 +1,9 @@
 // Logica de la app: cita del dia, navegacion por dias, idioma, copiar y ventanas del escritorio.
-import { quoteForDate, localISODate, addDays, isoToLocalDate, noteColorForDate, DEFAULT_SEED } from '../lib/daily.js';
+import { quoteForDate, quoteIndexForDate, localISODate, addDays, isoToLocalDate, noteColorForDate, DEFAULT_SEED } from '../lib/daily.js';
 import { STRINGS, LABELS } from './i18n.js';
 import { initDesktop, showDialog } from './desktop.js';
 import { createApps } from './apps.js';
+import { createFavorites } from './favorites.js';
 
 const $ = (sel) => document.querySelector(sel);
 
@@ -20,6 +21,8 @@ const initialLang = () => {
 
 // La semilla decide el orden de las citas. Con ?seed=loquesea cada persona puede tener su propia secuencia.
 const seed = new URLSearchParams(location.search).get('seed')?.slice(0, 64) || DEFAULT_SEED;
+
+const favorites = createFavorites(store);
 
 const state = {
   lang: initialLang(),
@@ -52,6 +55,18 @@ function renderLabels() {
   desktop.setCtlLabels(labels.ctl);
 }
 
+const viewingIndex = () => quoteIndexForDate(state.viewing, seed);
+
+function renderFavorite() {
+  const on = favorites.has(viewingIndex());
+  const label = on ? t().favRemove : t().favAdd;
+  $('#menu-fav').textContent = label;
+  const btn = $('#btn-fav');
+  btn.title = label;
+  btn.setAttribute('aria-label', label);
+  btn.setAttribute('aria-pressed', String(on));
+}
+
 function render() {
   const q = quoteForDate(state.viewing, seed)[state.lang];
   const isToday = state.viewing === state.today;
@@ -63,6 +78,7 @@ function render() {
   $('#viewDate').textContent = isToday ? t().today : state.viewing;
   $('#btn-today').disabled = isToday;
   renderLabels();
+  renderFavorite();
   desktop.setClockTitle(`${t().clockTitle} ${formatDate(state.today)}`);
 }
 
@@ -88,6 +104,12 @@ function openQuote(iso) {
   desktop.openWindow('wordpad');
 }
 
+function toggleFavorite() {
+  const i = viewingIndex();
+  if (favorites.has(i)) { favorites.remove(i); setStatus(t().favRemoved); }
+  else { favorites.add(i); setStatus(t().favAdded); }
+}
+
 async function copyQuote() {
   const q = quoteForDate(state.viewing, seed)[state.lang];
   try {
@@ -101,6 +123,7 @@ async function copyQuote() {
 // ---------- Arranque ----------
 const desktop = initDesktop({
   copy: copyQuote,
+  fav: toggleFavorite,
   prev: () => go(-1),
   next: () => go(1),
   today: () => openQuote(state.today),
@@ -113,6 +136,8 @@ const desktop = initDesktop({
   'open-search': () => apps.open('search'),
   'open-system': () => apps.open('system'),
   'open-bin': () => apps.open('bin'),
+  'open-calc': () => apps.open('calc'),
+  'open-mines': () => apps.open('mines'),
 });
 
 const apps = createApps(desktop, {
@@ -121,6 +146,7 @@ const apps = createApps(desktop, {
   seed: () => seed,
   today: () => state.today,
   openQuote,
+  favorites,
 });
 
 document.addEventListener('keydown', (e) => {
@@ -131,6 +157,7 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'ArrowRight') go(1);
 });
 
+favorites.subscribe(renderFavorite);
 render();
 setStatus(t().ready);
 

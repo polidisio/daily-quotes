@@ -9,10 +9,14 @@ index.html          Maquetación (ventana WordPad, iconos, menú Inicio, barra d
 css/style.css       Estilos retro (variables CSS para el bisel y los colores)
 js/app.js           Cita del día, navegación por días, idioma, copiar
 js/desktop.js       Gestor de ventanas (mover, foco, minimizar, maximizar, cerrar), menús, diálogos
-js/apps.js          Ventanas: Mis documentos, Buscar citas, Propiedades del sistema, Papelera
+js/apps.js          Ventanas: Mis documentos (recientes/favoritas), Buscar, Propiedades, Papelera
+js/games.js         Interfaz de Calculadora y Buscaminas
+js/favorites.js     Favoritas y papelera (localStorage)
 js/i18n.js          Textos es/en
 lib/quotes.js       58 citas bilingües. Añade nuevas AL FINAL del array
 lib/daily.js        Fechas y rotación con semilla (testeable, sin DOM)
+lib/calc.js         Máquina de estados de la calculadora
+lib/minesweeper.js  Lógica del Buscaminas
 test/               Tests con node:test
 ```
 
@@ -38,5 +42,8 @@ npm test
 ## Interacción
 
 - Flechas izquierda/derecha: día anterior/siguiente (con WordPad enfocado). Ver: Hoy, idioma.
-- Doble clic en iconos: Mis documentos (últimos 30 días), Buscar citas (próxima fecha de cada cita), Mi PC (propiedades), Papelera.
-- Menú Inicio con acceso a todas las ventanas; barra de tareas con una entrada por ventana abierta.
+- Editar > Añadir a favoritas (o botón F de la barra): guarda la cita. Se ven en Mis documentos > Favoritas.
+- Quitar una favorita (botón Eliminar o tecla Supr) la envía a la Papelera; desde allí se puede restaurar o vaciar con confirmación.
+- Las favoritas se guardan en el navegador (localStorage) por índice de cita, por eso las citas nuevas se añaden siempre al final.
+- Doble clic en iconos: Mis documentos, Buscar citas (próxima fecha de cada cita), Mi PC (propiedades), Papelera.
+- Menú Inicio: además, Calculadora (con teclado) y Buscaminas 9x9 (clic derecho o tecla F para bandera; botón Modo bandera en táctil).

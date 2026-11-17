@@ -1,6 +1,8 @@
 // Mini "aplicaciones" de las ventanas del escritorio: Mis documentos, Buscar, Propiedades, Papelera.
 import { QUOTES } from '../lib/quotes.js';
 import { quoteForDate, nextDateForQuote, cycleInfo, addDays } from '../lib/daily.js';
+import { showDialog } from './desktop.js';
+import { createCalculator, createMinesweeper } from './games.js';
 
 const FOLDER_DAYS = 30;
 
@@ -18,7 +20,7 @@ function statusBar(...texts) {
 }
 
 /** Fila seleccionable de una lista (clic selecciona, doble clic o Enter abre). */
-function fileRow(cells, onOpen) {
+function fileRow(cells, onOpen, onSelect) {
   const row = el('button', 'file');
   row.type = 'button';
   row.setAttribute('role', 'option');
@@ -27,6 +29,7 @@ function fileRow(cells, onOpen) {
   row.addEventListener('click', () => {
     row.parentElement.querySelectorAll('.file.selected').forEach((n) => n.classList.remove('selected'));
     row.classList.add('selected');
+    onSelect?.();
   });
   row.addEventListener('dblclick', onOpen);
   row.addEventListener('keydown', (e) => { if (e.key === 'Enter') onOpen(); });
@@ -35,30 +38,68 @@ function fileRow(cells, onOpen) {
 
 /**
  * @param wm   gestor de ventanas de desktop.js
- * @param ctx  { t(), lang(), seed(), today(), openQuote(iso) }
+ * @param ctx  { t(), lang(), seed(), today(), openQuote(iso), favorites }
  */
 export function createApps(wm, ctx) {
   let searchQuery = '';
 
   // ---------- Mis documentos ----------
+  let folderTab = 'recent';
   function renderFolder(body) {
     const t = ctx.t();
     const lang = ctx.lang();
+    const fav = ctx.favorites;
     body.replaceChildren();
+
     const addr = el('div', 'address-bar');
     addr.append(el('span', '', t.folderAddress), el('span', 'field', t.folderPath));
+
+    const tabs = el('div', 'tabs');
+    tabs.setAttribute('role', 'tablist');
+    const mkTab = (id, label) => {
+      const b = el('button', 'tab', label);
+      b.type = 'button';
+      b.setAttribute('role', 'tab');
+      b.setAttribute('aria-selected', String(folderTab === id));
+      b.addEventListener('click', () => { folderTab = id; renderFolder(body); });
+      return b;
+    };
+    const del = el('button', 'btn small', t.delete);
+    del.type = 'button';
+    del.disabled = true;
+    del.hidden = folderTab !== 'favs';
+    tabs.append(mkTab('recent', t.tabRecent), mkTab('favs', t.tabFavs), del);
+
     const head = el('div', 'file-head');
     head.append(el('span'), el('span', '', t.colName), el('span', '', t.colAuthor));
     const list = el('div', 'file-list');
     list.setAttribute('role', 'listbox');
-    for (let i = 0; i < FOLDER_DAYS; i++) {
-      const iso = addDays(ctx.today(), -i);
-      list.append(fileRow(
-        [['file-name', `${iso}.txt`], ['file-author', quoteForDate(iso, ctx.seed())[lang].author]],
-        () => ctx.openQuote(iso),
-      ));
+
+    let count;
+    let selected = null;
+    if (folderTab === 'recent') {
+      count = t.folderObjects(FOLDER_DAYS);
+      for (let i = 0; i < FOLDER_DAYS; i++) {
+        const iso = addDays(ctx.today(), -i);
+        list.append(fileRow(
+          [['file-name', `${iso}.txt`], ['file-author', quoteForDate(iso, ctx.seed())[lang].author]],
+          () => ctx.openQuote(iso),
+        ));
+      }
+    } else {
+      const items = fav.active();
+      count = t.favCount(items.length);
+      if (!items.length) list.append(el('p', 'empty-note', t.favEmpty));
+      items.forEach((idx) => list.append(fileRow(
+        [['file-name', QUOTES[idx][lang].text], ['file-author', QUOTES[idx][lang].author]],
+        () => ctx.openQuote(nextDateForQuote(idx, ctx.today(), ctx.seed())),
+        () => { selected = idx; del.disabled = false; },
+      )));
+      const remove = () => { if (selected !== null) fav.remove(selected); };
+      del.addEventListener('click', remove);
+      list.addEventListener('keydown', (e) => { if (e.key === 'Delete') remove(); });
     }
-    body.append(addr, head, list, statusBar(t.folderObjects(FOLDER_DAYS), t.folderHint));
+    body.append(addr, tabs, head, list, statusBar(count, t.folderHint));
   }
 
   // ---------- Buscar citas ----------
@@ -133,23 +174,59 @@ export function createApps(wm, ctx) {
   // ---------- Papelera ----------
   function renderBin(body) {
     const t = ctx.t();
+    const lang = ctx.lang();
+    const fav = ctx.favorites;
+    const items = fav.bin();
     body.replaceChildren();
-    const empty = el('div', 'bin-empty');
-    empty.append(el('div', 'bin-glyph'), el('p', '', t.binEmpty));
-    const btn = el('button', 'btn', t.binButton);
-    btn.type = 'button';
-    btn.disabled = true;
-    empty.append(btn);
-    body.append(empty);
+
+    let selected = null;
+    const bar = el('div', 'tabs');
+    const restore = el('button', 'btn small', t.restore);
+    const empty = el('button', 'btn small', t.binButton);
+    [restore, empty].forEach((b) => { b.type = 'button'; });
+    restore.disabled = true;
+    empty.disabled = items.length === 0;
+    bar.append(restore, empty);
+
+    const list = el('div', 'file-list');
+    list.setAttribute('role', 'listbox');
+    if (!items.length) {
+      const note = el('div', 'bin-empty');
+      note.append(el('div', 'bin-glyph'), el('p', '', t.binEmpty));
+      list.append(note);
+    }
+    items.forEach((idx) => list.append(fileRow(
+      [['file-name', QUOTES[idx][lang].text], ['file-author', QUOTES[idx][lang].author]],
+      () => fav.restore(idx),
+      () => { selected = idx; restore.disabled = false; },
+    )));
+    restore.addEventListener('click', () => { if (selected !== null) fav.restore(selected); });
+    empty.addEventListener('click', async () => {
+      const choice = await showDialog({
+        title: t.binConfirmTitle,
+        message: t.binConfirm(items.length),
+        buttons: [{ id: 'yes', label: t.yes }, { id: 'no', label: t.no }],
+      });
+      if (choice === 'yes') fav.purge();
+    });
+    body.append(bar, list, statusBar(t.binCount(items.length), t.folderHint));
   }
 
   const defs = {
     folder: { width: 460, title: (t) => t.folderTitle, render: renderFolder },
     search: { width: 520, title: (t) => t.searchTitle, render: renderSearch },
     system: { width: 400, title: (t) => t.systemTitle, render: renderSystem },
-    bin: { width: 340, title: (t) => t.binTitle, render: renderBin },
+    bin: { width: 440, title: (t) => t.binTitle, render: renderBin },
+    calc: { width: 240, title: (t) => t.calcTitle, render: (body) => createCalculator(body), keep: true },
+    mines: { width: 262, title: (t) => t.minesTitle, render: (body) => createMinesweeper(body, ctx), keep: true },
   };
   const mounted = new Map();
+  const controllers = new Map();       // juegos: conservan su estado al cambiar de idioma
+
+  // Cambios en favoritas/papelera: repintar esas ventanas si estan creadas.
+  ctx.favorites.subscribe(() => ['folder', 'bin'].forEach((id) => {
+    if (mounted.has(id)) defs[id].render(mounted.get(id));
+  }));
 
   return {
     open(id) {
@@ -157,9 +234,10 @@ export function createApps(wm, ctx) {
       if (!mounted.has(id)) {
         const { body } = wm.createWindow(id, def.title(ctx.t()), { width: def.width });
         mounted.set(id, body);
-        def.render(body);
-      } else {
-        defs[id].render(mounted.get(id));      // refresca (p. ej. cambio de dia)
+        const controller = def.render(body);
+        if (controller) controllers.set(id, controller);
+      } else if (!def.keep) {
+        def.render(mounted.get(id));           // refresca (p. ej. cambio de dia)
       }
       wm.openWindow(id);
       mounted.get(id).querySelector('input, .file, button:not(:disabled)')?.focus?.({ preventScroll: true });
@@ -167,7 +245,8 @@ export function createApps(wm, ctx) {
     /** Vuelve a pintar las ventanas abiertas (cambio de idioma). */
     refresh() {
       mounted.forEach((body, id) => {
-        defs[id].render(body);
+        const controller = controllers.get(id);
+        if (controller) controller.update(); else defs[id].render(body);
         wm.setTitle(id, defs[id].title(ctx.t()));
       });
     },
